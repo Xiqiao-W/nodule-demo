@@ -47,19 +47,9 @@
             display: flex;
             flex-direction: column;
         }
-        
         @media (max-width: 430px) {
-            .phone-frame {
-                width: 100vw;
-                height: 100vh;
-                height: -webkit-fill-available;
-                border-radius: 0;
-                box-shadow: none;
-            }
-            body {
-                padding: 0;
-                align-items: flex-start;
-            }
+            .phone-frame { width: 100vw; height: 100vh; height: -webkit-fill-available; border-radius: 0; box-shadow: none; }
+            body { padding: 0; align-items: flex-start; }
         }
 
         .status-bar {
@@ -183,41 +173,108 @@
         .case-result { display: flex; align-items: center; gap: 6px; padding-top: 10px; border-top: 1px solid var(--border-light); font-size: 12px; font-weight: 500; }
 
         /* User Profile Page */
-        .user-profile-page { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: var(--bg-white); z-index: 1500; display: none; flex-direction: column; }
+        .user-profile-page { 
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0; 
+            background: var(--bg-white); z-index: 1500; 
+            display: none; flex-direction: column;
+            overflow: hidden;
+        }
         .user-profile-page.active { display: flex; }
-        .profile-header-section { padding: 20px; background: linear-gradient(135deg, var(--primary-pink-light) 0%, #F3E5F5 100%); border-radius: 0 0 24px 24px; }
-        .profile-back { display: flex; align-items: center; gap: 8px; margin-bottom: 16px; cursor: pointer; font-size: 14px; color: var(--text-secondary); }
+        
+        /* Header — compact, never grows */
+        .profile-header-section { 
+            flex-shrink: 0;
+            padding: 16px 20px 14px;
+            background: linear-gradient(135deg, var(--primary-pink-light) 0%, #F3E5F5 100%); 
+            border-radius: 0 0 20px 20px; 
+        }
+        .profile-back { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; cursor: pointer; font-size: 14px; color: var(--text-secondary); }
         .profile-back span { font-size: 20px; }
-        .profile-main { display: flex; align-items: center; gap: 16px; margin-bottom: 16px; }
-        .profile-avatar-large { width: 64px; height: 64px; border-radius: 50%; background: linear-gradient(135deg, var(--primary-pink) 0%, var(--accent-lavender) 100%); display: flex; align-items: center; justify-content: center; font-size: 24px; }
+        .profile-main { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+        .profile-avatar-large { width: 52px; height: 52px; border-radius: 50%; background: linear-gradient(135deg, var(--primary-pink) 0%, var(--accent-lavender) 100%); display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0; }
         .profile-info { flex: 1; }
-        .profile-name { font-size: 18px; font-weight: 700; margin-bottom: 4px; }
-        .profile-stats { display: flex; gap: 12px; font-size: 12px; color: var(--text-secondary); }
+        .profile-name { font-size: 16px; font-weight: 700; margin-bottom: 3px; }
+        .profile-stats { display: flex; gap: 10px; font-size: 11px; color: var(--text-secondary); flex-wrap: wrap; }
         .profile-stats span { color: var(--primary-pink-dark); font-weight: 600; }
-        .profile-stats .dot { width: 4px; height: 4px; background: var(--text-secondary); border-radius: 50%; }
+        .profile-stats .dot { width: 3px; height: 3px; background: var(--text-secondary); border-radius: 50%; margin-top: 4px; }
 
-        .condition-summary { background: white; border-radius: 12px; padding: 12px; margin-bottom: 12px; }
-        .condition-item { display: flex; justify-content: space-between; padding: 6px 0; font-size: 13px; }
-        .condition-item .label { color: var(--text-secondary); }
-        .condition-item .value { font-weight: 500; }
+        .condition-summary { 
+            background: white; border-radius: 10px; padding: 8px 12px;
+            display: flex; gap: 0; 
+        }
+        .condition-item { 
+            flex: 1;
+            display: flex; flex-direction: column; align-items: center;
+            padding: 4px 0; font-size: 12px;
+            border-right: 1px solid var(--border-light);
+        }
+        .condition-item:last-child { border-right: none; }
+        .condition-item .label { color: var(--text-secondary); font-size: 10px; margin-bottom: 2px; }
+        .condition-item .value { font-weight: 600; font-size: 13px; }
 
-        .timeline-section { padding: 16px; flex: 1; overflow-y: auto; }
-        .timeline-title { font-size: 16px; font-weight: 600; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+        /* Timeline — takes all remaining space, scrollable */
+        .timeline-section { 
+            flex: 1; 
+            overflow-y: auto; 
+            padding: 14px 16px;
+            -webkit-overflow-scrolling: touch;
+        }
+        .timeline-section::-webkit-scrollbar { display: none; }
+        .timeline-title { font-size: 15px; font-weight: 600; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
 
-        /* Discussion */
-        .discussion-section { padding: 16px; background: white; border-top: 1px solid var(--border-light); }
-        .discussion-title { font-size: 14px; font-weight: 600; margin-bottom: 12px; display: flex; align-items: center; gap: 6px; }
-        .discussion-input { display: flex; gap: 8px; margin-bottom: 12px; }
-        .discussion-input input { flex: 1; padding: 10px 14px; border: 2px solid var(--border-light); border-radius: 20px; font-size: 13px; }
+        /* Discussion — fixed at bottom, collapsed by default */
+        .discussion-section { 
+            flex-shrink: 0;
+            background: white; 
+            border-top: 1px solid var(--border-light);
+            max-height: 50vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .discussion-header {
+            display: flex; 
+            align-items: center; 
+            justify-content: space-between;
+            padding: 12px 16px;
+            cursor: pointer;
+            user-select: none;
+            flex-shrink: 0;
+        }
+        .discussion-title { font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 6px; }
+        .discussion-toggle { 
+            font-size: 12px; 
+            color: var(--primary-pink-dark);
+            display: flex; align-items: center; gap: 4px;
+            font-weight: 500;
+        }
+        .toggle-arrow { display: inline-block; transition: transform 0.3s ease; font-size: 10px; }
+        .toggle-arrow.open { transform: rotate(180deg); }
+
+        /* 2 top comments — always visible */
+        .discussion-preview { padding: 0 16px 10px; flex-shrink: 0; }
+        .preview-comment { display: flex; gap: 8px; margin-bottom: 8px; }
+        .preview-comment:last-child { margin-bottom: 0; }
+
+        /* Full comment list — only shown when expanded */
+        .discussion-expanded { display: none; flex-direction: column; overflow: hidden; }
+        .discussion-expanded.open { display: flex; }
+        .discussion-input { display: flex; gap: 8px; padding: 10px 16px; flex-shrink: 0; }
+        .discussion-input input { flex: 1; padding: 8px 14px; border: 2px solid var(--border-light); border-radius: 20px; font-size: 13px; }
         .discussion-input input:focus { outline: none; border-color: var(--primary-pink); }
-        .discussion-input button { padding: 10px 16px; background: var(--primary-pink); color: white; border: none; border-radius: 20px; font-size: 13px; cursor: pointer; }
-        .discussion-list { max-height: 200px; overflow-y: auto; }
-        .discussion-item { display: flex; gap: 8px; margin-bottom: 12px; }
-        .discussion-avatar { width: 28px; height: 28px; border-radius: 50%; background: var(--primary-pink-light); display: flex; align-items: center; justify-content: center; font-size: 12px; }
+        .discussion-input button { padding: 8px 14px; background: var(--primary-pink); color: white; border: none; border-radius: 20px; font-size: 13px; cursor: pointer; }
+        .discussion-list { overflow-y: auto; padding: 0 16px 12px; -webkit-overflow-scrolling: touch; }
+        .discussion-item { display: flex; gap: 8px; margin-bottom: 10px; }
+        .discussion-avatar { width: 28px; height: 28px; border-radius: 50%; background: var(--primary-pink-light); display: flex; align-items: center; justify-content: center; font-size: 12px; flex-shrink: 0; }
         .discussion-content { flex: 1; }
         .discussion-user { font-size: 12px; font-weight: 600; margin-bottom: 2px; }
         .discussion-text { font-size: 13px; color: var(--text-primary); line-height: 1.4; }
         .discussion-time { font-size: 10px; color: var(--text-secondary); margin-top: 2px; }
+        .top-comment-badge {
+            display: inline-block; padding: 1px 6px;
+            background: linear-gradient(135deg, var(--primary-pink), var(--accent-lavender));
+            color: white; border-radius: 8px; font-size: 9px;
+            margin-left: 4px; vertical-align: middle;
+        }
 
         /* Modal */
         .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: none; justify-content: center; align-items: flex-end; z-index: 2000; animation: fadeIn 0.3s; }
@@ -651,7 +708,7 @@
                     <span class="value" id="profileGrade">Grade 2</span>
                 </div>
                 <div class="condition-item">
-                    <span class="label" data-en="Max Size" data-zh="最大尺寸">Max Size</span>
+                    <span class="label" data-en="Size" data-zh="尺寸">Size</span>
                     <span class="value" id="profileSize">12mm</span>
                 </div>
             </div>
@@ -662,28 +719,61 @@
             <div id="userTimeline"></div>
         </div>
 
-        <!-- Discussion Section -->
+        <!-- Discussion Section: collapsed by default -->
         <div class="discussion-section">
-            <div class="discussion-title">💬 <span data-en="Discussion" data-zh="讨论区">Discussion</span> <span style="font-weight:400;color:var(--text-secondary);font-size:12px">(12)</span></div>
-            <div class="discussion-input">
-                <input type="text" placeholder="Ask a question or share..." id="commentInput">
-                <button onclick="postComment()">Post</button>
+            <div class="discussion-header" onclick="toggleDiscussion()">
+                <div class="discussion-title">
+                    💬 <span data-en="Discussion" data-zh="讨论区">Discussion</span>
+                    <span style="font-weight:400;color:var(--text-secondary);font-size:12px">(12)</span>
+                </div>
+                <div class="discussion-toggle">
+                    <span data-en="See all" data-zh="查看全部">See all</span>
+                    <span class="toggle-arrow" id="discussionArrow">▼</span>
+                </div>
             </div>
-            <div class="discussion-list" id="discussionList">
-                <div class="discussion-item">
+
+            <!-- 2 top comments always visible -->
+            <div class="discussion-preview">
+                <div class="preview-comment">
                     <div class="discussion-avatar">🌺</div>
                     <div class="discussion-content">
-                        <div class="discussion-user">姐妹 #3021</div>
-                        <div class="discussion-text" data-en="What TCM doctor did you use? I've been looking for a good one." data-zh="你用的哪位中医？我也在找好的中医">What TCM doctor did you use? I've been looking for a good one.</div>
-                        <div class="discussion-time">2 hours ago</div>
+                        <div class="discussion-user">姐妹 #3021 <span class="top-comment-badge">Top</span></div>
+                        <div class="discussion-text" data-en="What TCM doctor did you use? My nodules are also Grade 2 bilateral." data-zh="你用的哪位中医？我也是双侧2级">What TCM doctor did you use? My nodules are also Grade 2 bilateral.</div>
+                        <div class="discussion-time">2 hours ago · 24 likes</div>
                     </div>
                 </div>
-                <div class="discussion-item">
-                    <div class="discussion-avatar">💪</div>
+                <div class="preview-comment">
+                    <div class="discussion-avatar">🌿</div>
                     <div class="discussion-content">
-                        <div class="discussion-user">姐妹 #2847</div>
-                        <div class="discussion-text" data-en="I went to XXX Hospital, Dr. Wang. Happy to share more details in private!" data-zh="我去的是XXX医院，王医生。可以私信分享更多！">I went to XXX Hospital, Dr. Wang. Happy to share more details in private!</div>
-                        <div class="discussion-time">1 hour ago</div>
+                        <div class="discussion-user">姐妹 #2847 <span class="top-comment-badge">Top</span></div>
+                        <div class="discussion-text" data-en="Same TCM routine for 3 months — my nodule shrank too. Keep going!" data-zh="同款中药方3个月，结节也缩小了，坚持！">Same TCM routine for 3 months — my nodule shrank too. Keep going!</div>
+                        <div class="discussion-time">1 hour ago · 18 likes</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Full section: shown on tap -->
+            <div class="discussion-expanded" id="discussionExpanded">
+                <div class="discussion-input">
+                    <input type="text" placeholder="Ask or share your experience..." id="commentInput">
+                    <button onclick="postComment()">Post</button>
+                </div>
+                <div class="discussion-list" id="discussionList">
+                    <div class="discussion-item">
+                        <div class="discussion-avatar">🌸</div>
+                        <div class="discussion-content">
+                            <div class="discussion-user">姐妹 #4102</div>
+                            <div class="discussion-text" data-en="Did you feel any side effects from TCM? I'm hesitant to start." data-zh="喝中药有副作用吗？我有点担心">Did you feel any side effects from TCM? I'm hesitant to start.</div>
+                            <div class="discussion-time">5 hours ago</div>
+                        </div>
+                    </div>
+                    <div class="discussion-item">
+                        <div class="discussion-avatar">⭐</div>
+                        <div class="discussion-content">
+                            <div class="discussion-user">姐妹 #1899</div>
+                            <div class="discussion-text" data-en="How often did you do ultrasound? Every 3 or 6 months?" data-zh="你多久复查一次B超？3个月还是6个月？">How often did you do ultrasound? Every 3 or 6 months?</div>
+                            <div class="discussion-time">Yesterday</div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -938,6 +1028,14 @@
             t.textContent = msg;
             t.classList.add('show');
             setTimeout(() => t.classList.remove('show'), 2500);
+        }
+
+        function toggleDiscussion() {
+            const expanded = document.getElementById('discussionExpanded');
+            const arrow = document.getElementById('discussionArrow');
+            const isOpen = expanded.classList.contains('open');
+            expanded.classList.toggle('open', !isOpen);
+            arrow.classList.toggle('open', !isOpen);
         }
 
         // Filter chip clicks
