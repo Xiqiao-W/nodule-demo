@@ -79,11 +79,11 @@
             color: var(--primary-pink-dark);
         }
 
-        .content { flex: 1; overflow-y: auto; padding-bottom: 90px; -webkit-overflow-scrolling: touch; }
+        .content { flex: 1; overflow-y: scroll; overflow-x: hidden; padding-bottom: 100px; -webkit-overflow-scrolling: touch; height: 0; }
         .content::-webkit-scrollbar { display: none; }
 
         .tab-page { display: none; padding: 16px; animation: fadeIn 0.3s ease; }
-        .tab-page.active { display: block; }
+        .tab-page.active { display: block; min-height: 100%; }
 
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
@@ -99,7 +99,8 @@
             left: 0;
             right: 0;
             padding-bottom: env(safe-area-inset-bottom, 10px);
-            z-index: 100;
+            z-index: 200;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
         }
         .nav-item {
             flex: 1;
@@ -518,6 +519,9 @@
                         <div><span>3</span> <span data-en="records" data-zh="条记录">records</span></div>
                         <div><span>18</span> <span data-en="months" data-zh="个月">months</span></div>
                     </div>
+                    <div style="margin-top:8px; font-size:12px; color:#F48FB1; font-weight:500;">
+                        🏥 <span data-en="Linked to: Dr. Wang @ iKang Health Center" data-zh="关联机构：王医生 @ 爱康国宾体检中心">Linked to: Dr. Wang @ iKang Health Center</span>
+                    </div>
                 </div>
 
                 <div class="toggle-row">
@@ -558,8 +562,11 @@
                 </div>
 
                 <div class="section-title" data-en="Settings" data-zh="设置">Settings</div>
+                <div class="settings-item" onclick="showToast('Coming soon')"><div class="settings-item-left"><div class="settings-icon">🏥</div><span class="settings-label" data-en="Book Checkup" data-zh="预约体检">Book Checkup</span></div><span class="settings-arrow">›</span></div>
+                <div class="settings-item" onclick="showToast('Coming soon')"><div class="settings-item-left"><div class="settings-icon">❓</div><span class="settings-label" data-en="Help & Feedback" data-zh="帮助与反馈">Help & Feedback</span></div><span class="settings-arrow">›</span></div>
 
-                <!-- CTA Button for Follow-up Booking -->
+                <!-- CTA Button pinned at bottom of profile page -->
+                <div style="padding: 16px 0 8px 0;">
                 <div class="cta-button" onclick="showToast('Booking your follow-up...')">
                     <div class="cta-icon">📅</div>
                     <div class="cta-content">
@@ -568,8 +575,7 @@
                     </div>
                     <div class="cta-arrow">→</div>
                 </div>
-                <div class="settings-item" onclick="showToast('Coming soon')"><div class="settings-item-left"><div class="settings-icon">🏥</div><span class="settings-label" data-en="Book Checkup" data-zh="预约体检">Book Checkup</span></div><span class="settings-arrow">›</span></div>
-                <div class="settings-item" onclick="showToast('Coming soon')"><div class="settings-item-left"><div class="settings-icon">❓</div><span class="settings-label" data-en="Help & Feedback" data-zh="帮助与反馈">Help & Feedback</span></div><span class="settings-arrow">›</span></div>
+                </div>
             </div>
         </div>
 
