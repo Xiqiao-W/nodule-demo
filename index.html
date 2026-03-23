@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>结伴 - 乳腺结节长期健康档案</title>
+    <title>Lumina Health</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -79,7 +79,7 @@
             color: var(--primary-pink-dark);
         }
 
-        .content { flex: 1; overflow-y: auto; padding-bottom: 80px; -webkit-overflow-scrolling: touch; }
+        .content { flex: 1; overflow-y: auto; padding-bottom: 90px; -webkit-overflow-scrolling: touch; }
         .content::-webkit-scrollbar { display: none; }
 
         .tab-page { display: none; padding: 16px; animation: fadeIn 0.3s ease; }
@@ -99,6 +99,11 @@
             left: 0;
             right: 0;
             padding-bottom: env(safe-area-inset-bottom, 10px);
+            z-index: 100;
+        }
+        .nav-item {
+            flex: 1;
+            max-width: 120px;
         }
 
         .nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; padding: 8px 16px; border-radius: 12px; }
@@ -116,12 +121,16 @@
         /* Hero */
         .hero-section { background: linear-gradient(135deg, var(--primary-pink-light) 0%, #E8EAF6 100%); border-radius: 20px; padding: 20px; margin-bottom: 16px; position: relative; overflow: hidden; }
         .hero-section::before { content: ''; position: absolute; top: -30px; right: -30px; width: 120px; height: 120px; background: radial-gradient(circle, rgba(255,255,255,0.5) 0%, transparent 70%); }
+        .clinic-badge { display: inline-block; background: linear-gradient(135deg, #3F51B5 0%, #5C6BC0 100%); color: #fff; font-size: 12px; font-weight: 600; padding: 6px 14px; border-radius: 14px; margin-bottom: 10px; border: none; box-shadow: 0 2px 8px rgba(63, 81, 181, 0.3); }
         .hero-title { font-size: 20px; font-weight: 700; margin-bottom: 8px; }
         .hero-desc { font-size: 14px; color: var(--text-secondary); line-height: 1.5; margin-bottom: 16px; }
         .hero-stat { display: flex; gap: 20px; }
         .hero-stat-item { text-align: center; }
         .hero-stat-value { font-size: 24px; font-weight: 700; color: var(--primary-pink-dark); }
         .hero-stat-label { font-size: 11px; color: var(--text-secondary); }
+        .hero-stat-item.highlight { background: linear-gradient(135deg, #FFF8E1 0%, #FFECB3 100%); border-radius: 12px; padding: 8px 12px; border: 2px solid #FFD54F; }
+        .hero-stat-item.highlight .hero-stat-value { color: #F57C00; font-size: 28px; }
+        .hero-stat-item.highlight .hero-stat-label { color: #E65100; font-weight: 600; }
 
         /* Timeline */
         .timeline-card { background: var(--card-white); border-radius: 16px; padding: 16px; margin-bottom: 12px; }
@@ -390,6 +399,14 @@
         .settings-label { font-size: 14px; }
         .settings-arrow { color: var(--text-secondary); }
 
+        /* CTA Button */
+        .cta-button { display: flex; align-items: center; gap: 12px; padding: 16px; background: linear-gradient(135deg, #1A237E 0%, #3949AB 100%); border-radius: 16px; margin-bottom: 12px; cursor: pointer; box-shadow: 0 4px 15px rgba(57, 73, 171, 0.4); border: 2px solid #5C6BC0; }
+        .cta-icon { font-size: 24px; }
+        .cta-content { flex: 1; display: flex; flex-direction: column; }
+        .cta-title { font-size: 16px; font-weight: 700; color: #fff; }
+        .cta-subtitle { font-size: 12px; color: #B3E5FC; }
+        .cta-arrow { font-size: 20px; color: #fff; font-weight: bold; }
+
         .premium-section { margin-bottom: 16px; }
         .premium-item { display: flex; align-items: center; justify-content: space-between; padding: 14px; background: var(--card-white); border-radius: 12px; margin-bottom: 8px; cursor: pointer; }
         .premium-item.locked::after { content: '🔒'; font-size: 14px; }
@@ -419,8 +436,9 @@
             <!-- Home / Records Page -->
             <div class="tab-page active" id="home-page">
                 <div class="hero-section">
+                    <div class="clinic-badge" data-en="Linked to: Dr. Wang @ Premium Health Center" data-zh="关联机构：王医生 @ 优康体检中心">Linked to: Dr. Wang @ Premium Health Center</div>
                     <div class="hero-title" data-en="Your Health Journey" data-zh="你的健康历程">Your Health Journey</div>
-                    <div class="hero-desc" data-en="Track interventions → See results → Help others" data-zh="记录干预选择 → 追踪结果 → 帮助他人">Track interventions → See results → Help others</div>
+                    <div class="hero-desc" data-en="Track your interventions → See your results → Monitor your health" data-zh="记录干预选择 → 追踪健康结果 → 监测身体变化">Track your interventions → See your results → Monitor your health</div>
                     <div class="hero-stat">
                         <div class="hero-stat-item">
                             <div class="hero-stat-value" data-en="3" data-zh="3">3</div>
@@ -430,9 +448,9 @@
                             <div class="hero-stat-value" data-en="18" data-zh="18">18</div>
                             <div class="hero-stat-label" data-en="Months" data-zh="个月">Months</div>
                         </div>
-                        <div class="hero-stat-item">
-                            <div class="hero-stat-value" data-en="847" data-zh="847">847</div>
-                            <div class="hero-stat-label" data-en="Similar" data-zh="相似案例">Similar</div>
+                        <div class="hero-stat-item highlight">
+                            <div class="hero-stat-value" data-en="180" data-zh="180">180</div>
+                            <div class="hero-stat-label" data-en="Days to Next Follow-up" data-zh="天">Days to Next Follow-up</div>
                         </div>
                     </div>
                 </div>
@@ -486,164 +504,8 @@
                 <button class="add-record-btn" onclick="openAddRecord()">
                     <span>+</span> <span data-en="Add New Record" data-zh="添加新记录">Add New Record</span>
                 </button>
-
-                <!-- Data Preview -->
-                <div class="section-title" style="margin-top:20px" data-en="Similar Cases Data" data-zh="相似案例数据">Similar Cases Data</div>
-                <div class="data-card" onclick="switchTab('community')">
-                    <div class="data-card-header">
-                        <span class="data-card-title" data-en="TCM + Exercise, 6 months" data-zh="中药+运动，6个月">TCM + Exercise, 6 months</span>
-                        <span class="data-card-badge">156</span>
-                    </div>
-                    <div class="data-card-desc" data-en="Women with bilateral nodules, Grade 2" data-zh="双侧结节，2级女性">Women with bilateral nodules, Grade 2</div>
-                    <div class="outcome-bars">
-                        <div class="outcome-bar-item">
-                            <span class="outcome-bar-label" data-en="Stable" data-zh="稳定">Stable</span>
-                            <div class="outcome-bar-track"><div class="outcome-bar-fill green" style="width:65%">65%</div></div>
-                        </div>
-                        <div class="outcome-bar-item">
-                            <span class="outcome-bar-label" data-en="Shrunk" data-zh="缩小">Shrunk</span>
-                            <div class="outcome-bar-track"><div class="outcome-bar-fill yellow" style="width:25%">25%</div></div>
-                        </div>
-                        <div class="outcome-bar-item">
-                            <span class="outcome-bar-label" data-en="Grow" data-zh="增长">Grow</span>
-                            <div class="outcome-bar-track"><div class="outcome-bar-fill red" style="width:10%">10%</div></div>
-                        </div>
-                    </div>
-                </div>
             </div>
 
-            <!-- Community Page -->
-            <div class="tab-page" id="community-page">
-                <div class="section-title" data-en="Real Cases" data-zh="真实案例">Real Cases</div>
-                <div class="section-subtitle" data-en="Full journey from women who shared" data-zh="来自分享完整历程的女性">Full journey from women who shared</div>
-
-                <div class="case-card" onclick="openUserProfile('user1')">
-                    <div class="case-header">
-                        <div class="case-user">
-                            <div class="case-avatar">🌸</div>
-                            <div>
-                                <div class="case-name">姐妹 #2847</div>
-                                <div class="case-duration" data-en="18 months journey" data-zh="18个月历程">18 months journey</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="case-condition" data-en="Bilateral, Grade 2, max 12mm" data-zh="双侧，2级，最大12mm">Bilateral, Grade 2, max 12mm</div>
-                    <div class="case-interventions">
-                        <span class="intervention-tag" data-en="TCM" data-zh="中药">TCM</span>
-                        <span class="intervention-tag" data-en="Yoga" data-zh="瑜伽">Yoga</span>
-                        <span class="intervention-tag" data-en="Diet" data-zh="饮食">Diet</span>
-                    </div>
-                    <div class="case-result" style="color:var(--success-green)">
-                        <span>📉</span> <span data-en="Shrunk 30%, symptoms improved" data-zh="缩小30%，症状改善">Shrunk 30%, symptoms improved</span>
-                    </div>
-                </div>
-
-                <div class="case-card" onclick="openUserProfile('user2')">
-                    <div class="case-header">
-                        <div class="case-user">
-                            <div class="case-avatar">💪</div>
-                            <div>
-                                <div class="case-name">姐妹 #1923</div>
-                                <div class="case-duration" data-en="12 months journey" data-zh="12个月历程">12 months journey</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="case-condition" data-en="Right side, Grade 3, 15mm" data-zh="右侧，3级，15mm">Right side, Grade 3, 15mm</div>
-                    <div class="case-interventions">
-                        <span class="intervention-tag" data-en="Ablation" data-zh="消融">Ablation</span>
-                        <span class="intervention-tag" data-en="Exercise" data-zh="运动">Exercise</span>
-                    </div>
-                    <div class="case-result" style="color:var(--success-green)">
-                        <span>✓</span> <span data-en="No recurrence, regular checkups" data-zh="无复发，定期复查中">No recurrence, regular checkups</span>
-                    </div>
-                </div>
-
-                <div class="case-card" onclick="openUserProfile('user3')">
-                    <div class="case-header">
-                        <div class="case-user">
-                            <div class="case-avatar">🌺</div>
-                            <div>
-                                <div class="case-name">姐妹 #3651</div>
-                                <div class="case-duration" data-en="24 months journey" data-zh="24个月历程">24 months journey</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="case-condition" data-en="Left side, Grade 4a, 18mm" data-zh="左侧，4a级，18mm">Left side, Grade 4a, 18mm</div>
-                    <div class="case-interventions">
-                        <span class="intervention-tag" data-en="Ablation" data-zh="消融">Ablation</span>
-                        <span class="intervention-tag" data-en="TCM" data-zh="中药">TCM</span>
-                    </div>
-                    <div class="case-result" style="color:var(--success-green)">
-                        <span>✓</span> <span data-en="Completely recovered, 95% satisfied" data-zh="完全消失，满意度95%">Completely recovered, 95% satisfied</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Search Page -->
-            <div class="tab-page" id="search-page">
-                <div class="section-title" data-en="Find Similar Cases" data-zh="查找相似案例">Find Similar Cases</div>
-                <div class="section-subtitle" data-en="See outcomes from women like you" data-zh="看看和你一样的人的结果">See outcomes from women like you</div>
-
-                <div class="card">
-                    <div class="search-filter">
-                        <div class="search-label" data-en="Diagnosis" data-zh="诊断">Diagnosis</div>
-                        <div class="filter-chips">
-                            <span class="filter-chip" data-en="Bilateral" data-zh="双侧" onclick="selectFilter(this)">Bilateral</span>
-                            <span class="filter-chip active" data-en="Unilateral" data-zh="单侧" onclick="selectFilter(this)">Unilateral</span>
-                            <span class="filter-chip" data-en="Multiple" data-zh="多发" onclick="selectFilter(this)">Multiple</span>
-                        </div>
-                    </div>
-
-                    <div class="search-filter">
-                        <div class="search-label" data-en="Size" data-zh="大小">Size</div>
-                        <div class="filter-chips">
-                            <span class="filter-chip" data-en="<5mm" data-zh="<5mm"><5mm</span>
-                            <span class="filter-chip active" data-en="5-10mm" data-zh="5-10mm">5-10mm</span>
-                            <span class="filter-chip" data-en="10-20mm" data-zh="10-20mm">10-20mm</span>
-                            <span class="filter-chip" data-en=">20mm" data-zh=">20mm">>20mm</span>
-                        </div>
-                    </div>
-
-                    <div class="search-filter">
-                        <div class="search-label" data-en="Grade" data-zh="分级">Grade</div>
-                        <div class="filter-chips">
-                            <span class="filter-chip" data-en="Grade 1" data-zh="1级">Grade 1</span>
-                            <span class="filter-chip active" data-en="Grade 2" data-zh="2级">Grade 2</span>
-                            <span class="filter-chip" data-en="Grade 3" data-zh="3级">Grade 3</span>
-                            <span class="filter-chip" data-en="Grade 4" data-zh="4级">Grade 4</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="section-title" data-en="Results: 156 women" data-zh="结果：156位女性">Results: 156 women</div>
-
-                <div class="data-card">
-                    <div class="data-card-header">
-                        <span class="data-card-title" data-en="After 6 months" data-zh="6个月后">After 6 months</span>
-                    </div>
-                    <div class="outcome-bars">
-                        <div class="outcome-bar-item">
-                            <span class="outcome-bar-label" data-en="Stable" data-zh="稳定">Stable</span>
-                            <div class="outcome-bar-track"><div class="outcome-bar-fill green" style="width:62%">62%</div></div>
-                        </div>
-                        <div class="outcome-bar-item">
-                            <span class="outcome-bar-label" data-en="Shrunk" data-zh="缩小">Shrunk</span>
-                            <div class="outcome-bar-track"><div class="outcome-bar-fill yellow" style="width:28%">28%</div></div>
-                        </div>
-                        <div class="outcome-bar-item">
-                            <span class="outcome-bar-label" data-en="Grow" data-zh="增长">Grow</span>
-                            <div class="outcome-bar-track"><div class="outcome-bar-fill red" style="width:10%">10%</div></div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="data-card premium-lock" onclick="openPaywall('analysis')">
-                    <div class="data-card-header">
-                        <span class="data-card-title" data-en="Detailed Analysis" data-zh="详细分析">Detailed Analysis</span>
-                        <span class="premium-badge">VIP</span>
-                    </div>
-                    <div class="data-card-desc" data-en="Compare by intervention type, see charts" data-zh="按干预类型对比，查看图表">Compare by intervention type, see charts</div>
-                </div>
             </div>
 
             <!-- Profile Page -->
@@ -659,13 +521,13 @@
                 </div>
 
                 <div class="toggle-row">
-                    <span class="toggle-label" data-en="Share my data to help others" data-zh="分享我的数据帮助他人">Share my data to help others</span>
+                    <span class="toggle-label" data-en="Auto-sync data with my original clinic" data-zh="自动与原诊所同步数据">Auto-sync data with my original clinic</span>
                     <div class="toggle-switch active" id="shareToggle" onclick="toggleShare()"></div>
                 </div>
 
-                <div class="section-title" data-en="Premium Features" data-zh="高级功能">Premium Features</div>
+                <div class="section-title" data-en="My VIP Clinic Services" data-zh="我的VIP体检中心服务">My VIP Clinic Services</div>
 
-                <div class="premium-item premium-lock" onclick="openPaywall('export')">
+                <div class="premium-item" onclick="openPaywall('export')">
                     <div class="premium-left">
                         <div class="premium-icon export">📄</div>
                         <div class="premium-text">
@@ -675,7 +537,7 @@
                     </div>
                 </div>
 
-                <div class="premium-item premium-lock" onclick="openPaywall('analysis')">
+                <div class="premium-item" onclick="openPaywall('analysis')">
                     <div class="premium-left">
                         <div class="premium-icon analysis">📊</div>
                         <div class="premium-text">
@@ -685,7 +547,7 @@
                     </div>
                 </div>
 
-                <div class="premium-item premium-lock" onclick="openPaywall('consult')">
+                <div class="premium-item" onclick="openPaywall('consult')">
                     <div class="premium-left">
                         <div class="premium-icon consult">👨‍⚕️</div>
                         <div class="premium-text">
@@ -696,7 +558,16 @@
                 </div>
 
                 <div class="section-title" data-en="Settings" data-zh="设置">Settings</div>
-                <div class="settings-item" onclick="showToast('Coming soon')"><div class="settings-item-left"><div class="settings-icon">🔔</div><span class="settings-label" data-en="Follow-up Reminder" data-zh="复查提醒">Follow-up Reminder</span></div><span class="settings-arrow">›</span></div>
+
+                <!-- CTA Button for Follow-up Booking -->
+                <div class="cta-button" onclick="showToast('Booking your follow-up...')">
+                    <div class="cta-icon">📅</div>
+                    <div class="cta-content">
+                        <span class="cta-title" data-en="1-Click Book Follow-up" data-zh="一键预约复查">1-Click Book Follow-up</span>
+                        <span class="cta-subtitle" data-en="at Premium Health Center" data-zh="在优康体检中心">at Premium Health Center</span>
+                    </div>
+                    <div class="cta-arrow">→</div>
+                </div>
                 <div class="settings-item" onclick="showToast('Coming soon')"><div class="settings-item-left"><div class="settings-icon">🏥</div><span class="settings-label" data-en="Book Checkup" data-zh="预约体检">Book Checkup</span></div><span class="settings-arrow">›</span></div>
                 <div class="settings-item" onclick="showToast('Coming soon')"><div class="settings-item-left"><div class="settings-icon">❓</div><span class="settings-label" data-en="Help & Feedback" data-zh="帮助与反馈">Help & Feedback</span></div><span class="settings-arrow">›</span></div>
             </div>
@@ -707,14 +578,6 @@
             <div class="nav-item active" data-tab="home" onclick="switchTab('home')">
                 <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z"/></svg>
                 <span class="nav-label" data-en="Records" data-zh="记录">Records</span>
-            </div>
-            <div class="nav-item" data-tab="community" onclick="switchTab('community')">
-                <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
-                <span class="nav-label" data-en="Cases" data-zh="案例">Cases</span>
-            </div>
-            <div class="nav-item" data-tab="search" onclick="switchTab('search')">
-                <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
-                <span class="nav-label" data-en="Compare" data-zh="对比">Compare</span>
             </div>
             <div class="nav-item" data-tab="profile" onclick="switchTab('profile')">
                 <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
