@@ -1,963 +1,732 @@
 <!DOCTYPE html>
-<html lang="zh">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lumina Health</title>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --primary-pink: #F8BBD9;
-            --primary-pink-dark: #F48FB1;
-            --primary-pink-light: #FCE4EC;
-            --bg-white: #FFF9FA;
-            --card-white: #FFFFFF;
-            --text-primary: #4A4A4A;
-            --text-secondary: #8E8E93;
-            --accent-coral: #FF8A80;
-            --accent-lavender: #B39DDB;
-            --success-green: #81C784;
-            --warning-amber: #FFD54F;
-            --border-light: #F0F0F0;
-            --shadow-pink: 0 4px 20px rgba(248, 187, 217, 0.35);
-            --shadow-card: 0 2px 12px rgba(248, 187, 217, 0.25);
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Lumina Health</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --pink: #F48FB1;
+  --pink-light: #FCE4EC;
+  --pink-dark: #E91E8C;
+  --purple: #CE93D8;
+  --bg: #FFF5F8;
+  --white: #FFFFFF;
+  --text: #333333;
+  --text2: #888888;
+  --border: #F0E0E8;
+  --green: #66BB6A;
+  --amber: #FFA726;
+  --red: #EF5350;
+  --navy: #1A237E;
+  --navy2: #3949AB;
+}
 
-        body {
-            font-family: 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', -apple-system, sans-serif;
-            background: linear-gradient(135deg, #FFF5F8 0%, #FFF9FA 50%, #FDF0F5 100%);
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-            padding: 20px;
-            color: var(--text-primary);
-        }
+body {
+  font-family: -apple-system, 'PingFang SC', 'Helvetica Neue', sans-serif;
+  background: #f0f0f0;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: 100vh;
+  padding: 20px;
+}
 
-        .phone-frame {
-            width: 375px;
-            height: 812px;
-            background: var(--bg-white);
-            border-radius: 40px;
-            box-shadow: 0 20px 60px rgba(244, 143, 177, 0.3), 0 0 0 12px #fff;
-            position: relative;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-        }
-        @media (max-width: 430px) {
-            .phone-frame { width: 100vw; height: 100vh; height: -webkit-fill-available; border-radius: 0; box-shadow: none; }
-            body { padding: 0; align-items: flex-start; }
-        }
+/* ── Phone Frame ── */
+.phone {
+  width: 375px;
+  height: 812px;
+  background: var(--bg);
+  border-radius: 40px;
+  box-shadow: 0 20px 60px rgba(244,143,177,0.3), 0 0 0 12px #fff;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+}
 
-        .status-bar {
-            height: 44px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0 20px;
-            font-size: 13px;
-            color: var(--text-primary);
-            background: var(--bg-white);
-            position: relative;
-            z-index: 100;
-        }
+@media (max-width: 430px) {
+  body { padding: 0; align-items: flex-start; }
+  .phone { width: 100vw; height: 100vh; height: 100dvh; border-radius: 0; box-shadow: none; }
+}
 
-        .status-bar .time { font-weight: 600; }
-        .lang-toggle {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            padding: 4px 8px;
-            background: var(--primary-pink-light);
-            border-radius: 12px;
-            cursor: pointer;
-            font-size: 11px;
-            font-weight: 500;
-            color: var(--primary-pink-dark);
-        }
+/* ── Status Bar ── */
+.status {
+  flex-shrink: 0;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  background: var(--bg);
+}
+.status-time { font-size: 15px; font-weight: 600; color: var(--text); }
+.lang-btn {
+  padding: 4px 10px;
+  background: var(--pink-light);
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--pink);
+  cursor: pointer;
+  border: none;
+}
 
-        .content { flex: 1; overflow-y: auto; overflow-x: hidden; padding-bottom: 80px; -webkit-overflow-scrolling: touch; min-height: 0; }
-        .content::-webkit-scrollbar { display: none; }
+/* ── Scrollable Content ── */
+.content {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 80px;
+}
+.content::-webkit-scrollbar { display: none; }
 
-        .tab-page { display: none; padding: 16px; animation: fadeIn 0.3s ease; min-height: calc(100% - 70px); box-sizing: border-box; }
-        .tab-page.active { display: block; min-height: calc(100% - 70px); overflow-y: auto; }
+/* ── Pages ── */
+.page { display: none; padding: 16px; }
+.page.active { display: block; }
 
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+/* ── Bottom Nav ── */
+.nav {
+  flex-shrink: 0;
+  height: 68px;
+  background: var(--white);
+  border-top: 1px solid var(--border);
+  display: flex;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+.nav-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  cursor: pointer;
+  border-radius: 12px;
+  margin: 6px;
+  transition: background 0.2s;
+}
+.nav-item.active { background: var(--pink-light); }
+.nav-icon { font-size: 20px; }
+.nav-label { font-size: 11px; color: var(--text2); }
+.nav-item.active .nav-label { color: var(--pink); font-weight: 600; }
 
-        .bottom-nav {
-            height: 70px;
-            background: var(--card-white);
-            border-top: 1px solid var(--border-light);
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            padding-bottom: env(safe-area-inset-bottom, 10px);
-            z-index: 200;
-            box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
-        }
-        .nav-item {
-            flex: 1;
-            max-width: 120px;
-        }
+/* ══════════════════════════════════
+   RECORDS PAGE
+══════════════════════════════════ */
 
-        .nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; padding: 8px 16px; border-radius: 12px; }
-        .nav-item:hover { background: var(--primary-pink-light); }
-        .nav-item.active { background: var(--primary-pink-light); }
-        .nav-item.active .nav-icon { color: var(--primary-pink-dark); }
-        .nav-item.active .nav-label { color: var(--primary-pink-dark); font-weight: 600; }
-        .nav-icon { width: 24px; height: 24px; color: var(--text-secondary); }
-        .nav-label { font-size: 11px; color: var(--text-secondary); }
+/* Hero Card */
+.hero {
+  background: linear-gradient(135deg, #EDE7F6 0%, #FCE4EC 100%);
+  border-radius: 20px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+.linked-badge {
+  display: inline-block;
+  background: var(--navy);
+  color: white;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 5px 12px;
+  border-radius: 20px;
+  margin-bottom: 12px;
+}
+.hero-title { font-size: 18px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+.hero-sub { font-size: 12px; color: var(--text2); margin-bottom: 14px; line-height: 1.4; }
+.hero-stats { display: flex; gap: 12px; align-items: stretch; }
+.stat { text-align: center; }
+.stat-val { font-size: 22px; font-weight: 700; color: var(--pink); }
+.stat-lbl { font-size: 11px; color: var(--text2); margin-top: 2px; }
+.followup-box {
+  flex: 1;
+  background: #FFFDE7;
+  border: 2px solid #FFD54F;
+  border-radius: 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 12px;
+}
+.followup-num { font-size: 32px; font-weight: 800; color: #E65100; line-height: 1; }
+.followup-lbl { font-size: 11px; color: #E65100; font-weight: 600; text-align: center; margin-top: 3px; }
 
-        .card { background: var(--card-white); border-radius: 20px; padding: 20px; margin-bottom: 16px; box-shadow: var(--shadow-card); }
-        .section-title { font-size: 18px; font-weight: 700; color: var(--text-primary); margin-bottom: 8px; }
-        .section-subtitle { font-size: 13px; color: var(--text-secondary); margin-bottom: 16px; }
+/* Section Title */
+.sec-title { font-size: 17px; font-weight: 700; color: var(--text); margin-bottom: 12px; }
 
-        /* Hero */
-        .hero-section { background: linear-gradient(135deg, var(--primary-pink-light) 0%, #E8EAF6 100%); border-radius: 20px; padding: 20px; margin-bottom: 16px; position: relative; overflow: hidden; }
-        .hero-section::before { content: ''; position: absolute; top: -30px; right: -30px; width: 120px; height: 120px; background: radial-gradient(circle, rgba(255,255,255,0.5) 0%, transparent 70%); }
-        .clinic-badge { display: inline-block; background: linear-gradient(135deg, #3F51B5 0%, #5C6BC0 100%); color: #fff; font-size: 12px; font-weight: 600; padding: 6px 14px; border-radius: 14px; margin-bottom: 10px; border: none; box-shadow: 0 2px 8px rgba(63, 81, 181, 0.3); }
-        .hero-title { font-size: 20px; font-weight: 700; margin-bottom: 8px; }
-        .hero-desc { font-size: 14px; color: var(--text-secondary); line-height: 1.5; margin-bottom: 16px; }
-        .hero-stat { display: flex; gap: 20px; }
-        .hero-stat-item { text-align: center; }
-        .hero-stat-value { font-size: 24px; font-weight: 700; color: var(--primary-pink-dark); }
-        .hero-stat-label { font-size: 11px; color: var(--text-secondary); }
-        .hero-stat-item.highlight { background: linear-gradient(135deg, #FFF8E1 0%, #FFECB3 100%); border-radius: 12px; padding: 8px 12px; border: 2px solid #FFD54F; }
-        .hero-stat-item.highlight .hero-stat-value { color: #F57C00; font-size: 28px; }
-        .hero-stat-item.highlight .hero-stat-label { color: #E65100; font-weight: 600; }
+/* Timeline Cards */
+.tcard {
+  background: var(--white);
+  border-radius: 16px;
+  padding: 14px 16px;
+  margin-bottom: 10px;
+  box-shadow: 0 1px 8px rgba(244,143,177,0.12);
+}
+.tcard-date { font-size: 12px; color: var(--text2); margin-bottom: 8px; }
+.tags { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 8px; }
+.tag {
+  padding: 4px 12px;
+  background: var(--pink-light);
+  border-radius: 20px;
+  font-size: 12px;
+  color: var(--pink);
+  font-weight: 500;
+}
+.result { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text); }
+.dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+.dot.green { background: var(--green); }
+.dot.amber { background: var(--amber); }
+.dot.red { background: var(--red); }
+.attach { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border); }
+.attach-row { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--text2); padding: 6px; background: var(--bg); border-radius: 8px; }
 
-        /* Timeline */
-        .timeline-card { background: var(--card-white); border-radius: 16px; padding: 16px; margin-bottom: 12px; }
-        .timeline-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-        .timeline-date { font-size: 12px; color: var(--text-secondary); }
-        .timeline-intervention { display: flex; align-items: center; gap: 6px; margin-bottom: 8px; flex-wrap: wrap; }
-        .intervention-tag { padding: 4px 10px; background: var(--primary-pink-light); border-radius: 12px; font-size: 12px; color: var(--primary-pink-dark); }
-        .timeline-result { display: flex; align-items: center; gap: 8px; }
-        .result-indicator { width: 10px; height: 10px; border-radius: 50%; }
-        .result-indicator.shrink { background: var(--success-green); }
-        .result-indicator.stable { background: var(--warning-amber); }
-        .result-indicator.grow { background: var(--accent-coral); }
-        .result-text { font-size: 13px; }
-        .timeline-attachment { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border-light); }
-        .attachment-item { display: flex; align-items: center; gap: 8px; padding: 8px; background: var(--bg-white); border-radius: 8px; margin-bottom: 6px; font-size: 12px; color: var(--text-secondary); }
-        .attachment-icon { font-size: 16px; }
+/* Add Record Button */
+.add-btn {
+  width: 100%;
+  padding: 15px;
+  background: linear-gradient(135deg, var(--pink) 0%, var(--pink-dark) 100%);
+  color: white;
+  border: none;
+  border-radius: 16px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 8px;
+  box-shadow: 0 4px 15px rgba(244,143,177,0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
 
-        .add-record-btn { width: 100%; padding: 14px; background: linear-gradient(135deg, var(--primary-pink) 0%, var(--primary-pink-dark) 100%); color: white; border: none; border-radius: 14px; font-size: 15px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 15px rgba(244, 143, 177, 0.4); }
+/* ══════════════════════════════════
+   PROFILE PAGE
+══════════════════════════════════ */
 
-        /* Data Cards */
-        .data-card { background: linear-gradient(135deg, var(--primary-pink-light) 0%, #F3E5F5 100%); border-radius: 16px; padding: 16px; margin-bottom: 12px; cursor: pointer; }
-        .data-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-        .data-card-title { font-size: 15px; font-weight: 600; }
-        .data-card-badge { padding: 3px 8px; background: white; border-radius: 10px; font-size: 11px; color: var(--primary-pink-dark); }
-        .data-card-desc { font-size: 12px; color: var(--text-secondary); margin-bottom: 10px; }
-        .outcome-bars { display: flex; flex-direction: column; gap: 8px; }
-        .outcome-bar-item { display: flex; align-items: center; gap: 8px; }
-        .outcome-bar-label { width: 50px; font-size: 11px; color: var(--text-secondary); }
-        .outcome-bar-track { flex: 1; height: 18px; background: rgba(255,255,255,0.5); border-radius: 9px; overflow: hidden; }
-        .outcome-bar-fill { height: 100%; border-radius: 9px; display: flex; align-items: center; justify-content: flex-end; padding-right: 6px; font-size: 10px; font-weight: 600; color: white; }
-        .outcome-bar-fill.green { background: var(--success-green); }
-        .outcome-bar-fill.yellow { background: var(--warning-amber); }
-        .outcome-bar-fill.red { background: var(--accent-coral); }
+.profile-header {
+  background: linear-gradient(135deg, var(--pink-light) 0%, #F3E5F5 100%);
+  border-radius: 20px;
+  padding: 24px;
+  text-align: center;
+  margin-bottom: 14px;
+}
+.avatar {
+  width: 72px; height: 72px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--pink) 0%, var(--purple) 100%);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 28px;
+  margin: 0 auto 10px;
+}
+.profile-name { font-size: 18px; font-weight: 700; margin-bottom: 6px; }
+.badge {
+  display: inline-block;
+  padding: 4px 14px;
+  background: var(--pink);
+  color: white;
+  border-radius: 12px;
+  font-size: 12px;
+  margin-bottom: 10px;
+}
+.profile-stats { display: flex; justify-content: center; gap: 20px; font-size: 13px; color: var(--text2); }
+.profile-stats b { color: var(--pink); }
+.clinic-link { margin-top: 10px; font-size: 12px; color: var(--pink); font-weight: 600; }
 
-        /* Premium Lock */
-        .premium-lock { position: relative; }
-        .premium-lock::after { content: '🔒'; position: absolute; right: 12px; top: 50%; transform: translateY(-50%); font-size: 14px; }
-        .premium-badge { display: inline-block; padding: 2px 8px; background: linear-gradient(135deg, #F8BBD9, #B39DDB); border-radius: 10px; font-size: 10px; color: white; margin-left: 6px; }
+/* Toggle Row */
+.toggle-row {
+  display: flex; align-items: center; justify-content: space-between;
+  background: var(--white);
+  border-radius: 14px;
+  padding: 14px 16px;
+  margin-bottom: 14px;
+  box-shadow: 0 1px 6px rgba(244,143,177,0.1);
+}
+.toggle-label { font-size: 14px; color: var(--text); }
+.toggle {
+  width: 46px; height: 26px;
+  background: var(--pink);
+  border-radius: 13px;
+  position: relative;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+.toggle::after {
+  content: '';
+  position: absolute;
+  width: 22px; height: 22px;
+  background: white;
+  border-radius: 50%;
+  top: 2px; left: 22px;
+  transition: left 0.3s;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+}
 
-        /* Case Card */
-        .case-card { background: var(--card-white); border-radius: 16px; padding: 16px; margin-bottom: 12px; cursor: pointer; }
-        .case-header { display: flex; justify-content: space-between; margin-bottom: 10px; }
-        .case-user { display: flex; align-items: center; gap: 8px; }
-        .case-avatar { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, var(--primary-pink) 0%, var(--accent-lavender) 100%); display: flex; align-items: center; justify-content: center; font-size: 16px; }
-        .case-name { font-size: 14px; font-weight: 600; }
-        .case-duration { font-size: 11px; color: var(--text-secondary); }
-        .case-condition { font-size: 12px; color: var(--text-secondary); margin-bottom: 8px; }
-        .case-interventions { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; }
-        .case-result { display: flex; align-items: center; gap: 6px; padding-top: 10px; border-top: 1px solid var(--border-light); font-size: 12px; font-weight: 500; }
+/* VIP Services */
+.vip-item {
+  display: flex; align-items: center; gap: 14px;
+  background: var(--white);
+  border-radius: 14px;
+  padding: 14px 16px;
+  margin-bottom: 10px;
+  box-shadow: 0 1px 6px rgba(244,143,177,0.1);
+  cursor: pointer;
+}
+.vip-icon {
+  width: 40px; height: 40px;
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px;
+  flex-shrink: 0;
+}
+.vip-icon.pdf { background: #FFF3E0; }
+.vip-icon.analytics { background: #E8F5E9; }
+.vip-icon.consult { background: #E3F2FD; }
+.vip-text h4 { font-size: 14px; font-weight: 600; color: var(--text); }
+.vip-text p { font-size: 12px; color: var(--text2); margin-top: 2px; }
 
-        /* User Profile Page */
-        .user-profile-page { 
-            position: fixed; top: 0; left: 0; right: 0; bottom: 0; 
-            background: var(--bg-white); z-index: 1500; 
-            display: none; flex-direction: column;
-            overflow: hidden;
-        }
-        .user-profile-page.active { display: flex; }
+/* Settings */
+.settings-item {
+  display: flex; align-items: center; justify-content: space-between;
+  background: var(--white);
+  border-radius: 14px;
+  padding: 14px 16px;
+  margin-bottom: 8px;
+  cursor: pointer;
+}
+.settings-left { display: flex; align-items: center; gap: 12px; }
+.settings-icon { width: 32px; height: 32px; border-radius: 8px; background: var(--pink-light); display: flex; align-items: center; justify-content: center; font-size: 16px; }
+.settings-label { font-size: 14px; color: var(--text); }
+.settings-arrow { color: var(--text2); font-size: 16px; }
 
-        /* Header */
-        .profile-header-section { 
-            flex-shrink: 0;
-            padding: 16px 20px 14px;
-            background: linear-gradient(135deg, var(--primary-pink-light) 0%, #F3E5F5 100%); 
-            border-radius: 0 0 20px 20px; 
-        }
-        .profile-back { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; cursor: pointer; font-size: 14px; color: var(--text-secondary); }
-        .profile-back span { font-size: 20px; }
-        .profile-main { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
-        .profile-avatar-large { width: 52px; height: 52px; border-radius: 50%; background: linear-gradient(135deg, var(--primary-pink) 0%, var(--accent-lavender) 100%); display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0; }
-        .profile-info { flex: 1; }
-        .profile-name { font-size: 16px; font-weight: 700; margin-bottom: 3px; }
-        .profile-stats { display: flex; gap: 10px; font-size: 11px; color: var(--text-secondary); flex-wrap: wrap; }
-        .profile-stats span { color: var(--primary-pink-dark); font-weight: 600; }
-        .profile-stats .dot { width: 3px; height: 3px; background: var(--text-secondary); border-radius: 50%; margin-top: 4px; }
-        .condition-summary { 
-            background: white; border-radius: 10px; padding: 8px 12px;
-            display: flex;
-        }
-        .condition-item { 
-            flex: 1; display: flex; flex-direction: column; align-items: center;
-            padding: 4px 0; font-size: 12px;
-            border-right: 1px solid var(--border-light);
-        }
-        .condition-item:last-child { border-right: none; }
-        .condition-item .label { color: var(--text-secondary); font-size: 10px; margin-bottom: 2px; }
-        .condition-item .value { font-weight: 600; font-size: 13px; }
+/* CTA Book Button */
+.cta-book {
+  display: flex; align-items: center; gap: 14px;
+  background: linear-gradient(135deg, var(--navy) 0%, var(--navy2) 100%);
+  border-radius: 18px;
+  padding: 16px 18px;
+  margin-top: 16px;
+  cursor: pointer;
+  box-shadow: 0 4px 20px rgba(26,35,126,0.35);
+  border: 2px solid #5C6BC0;
+}
+.cta-cal { font-size: 28px; flex-shrink: 0; }
+.cta-text { flex: 1; }
+.cta-title { font-size: 16px; font-weight: 800; color: white; }
+.cta-sub { font-size: 12px; color: #B3E5FC; margin-top: 2px; }
+.cta-arrow { font-size: 22px; color: white; font-weight: bold; }
 
-        /* Timeline — takes ALL remaining space */
-        .timeline-section { 
-            flex: 1; 
-            overflow-y: auto; 
-            padding: 14px 16px 0;
-            -webkit-overflow-scrolling: touch;
-        }
-        .timeline-section::-webkit-scrollbar { display: none; }
-        .timeline-title { font-size: 15px; font-weight: 600; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+/* ══════════════════════════════════
+   ADD RECORD MODAL
+══════════════════════════════════ */
+.overlay {
+  position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.45);
+  z-index: 500;
+  display: none;
+  align-items: flex-end;
+}
+.overlay.show { display: flex; }
+.modal {
+  background: white;
+  border-radius: 24px 24px 0 0;
+  width: 100%;
+  max-height: 88%;
+  overflow-y: auto;
+  padding-bottom: 20px;
+}
+.modal-head {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 18px 20px 12px;
+  position: sticky; top: 0; background: white; z-index: 10;
+  border-bottom: 1px solid var(--border);
+}
+.modal-title { font-size: 18px; font-weight: 700; }
+.modal-close { width: 30px; height: 30px; border: none; background: var(--bg); border-radius: 50%; font-size: 16px; cursor: pointer; color: var(--text2); }
+.modal-body { padding: 16px 20px; }
+.field-label { font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: 8px; margin-top: 14px; }
+.date-display { text-align: center; padding: 10px; border: 1px solid var(--border); border-radius: 12px; color: #007AFF; font-size: 14px; }
+.size-row { display: flex; align-items: center; gap: 10px; }
+.size-input { width: 80px; padding: 10px; border: 1.5px solid var(--border); border-radius: 10px; font-size: 14px; text-align: center; }
+.size-unit { font-size: 14px; color: var(--text2); }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip {
+  padding: 7px 14px; border: 1.5px solid var(--border);
+  border-radius: 20px; font-size: 13px; cursor: pointer; background: white; color: var(--text);
+  transition: all 0.2s;
+}
+.chip.sel { background: var(--pink); border-color: var(--pink); color: white; }
+.notes-input { width: 100%; padding: 10px 14px; border: 1.5px solid var(--border); border-radius: 12px; font-size: 13px; resize: none; height: 80px; font-family: inherit; }
+.save-btn {
+  width: 100%; padding: 15px;
+  background: linear-gradient(135deg, var(--pink) 0%, var(--pink-dark) 100%);
+  color: white; border: none; border-radius: 14px; font-size: 15px; font-weight: 700;
+  cursor: pointer; margin-top: 20px;
+}
 
-        /* Comments button — thin bar at bottom */
-        .comments-bar {
-            flex-shrink: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 12px 16px;
-            background: white;
-            border-top: 1px solid var(--border-light);
-            cursor: pointer;
-            gap: 8px;
-        }
-        .comments-bar:active { background: var(--bg-white); }
-        .comments-bar-text {
-            font-size: 14px;
-            font-weight: 600;
-            color: var(--text-primary);
-        }
-        .comments-bar-count {
-            padding: 2px 10px;
-            background: var(--primary-pink-light);
-            color: var(--primary-pink-dark);
-            border-radius: 12px;
-            font-size: 12px;
-            font-weight: 600;
-        }
-        .comments-bar-arrow { color: var(--text-secondary); font-size: 12px; }
-
-        /* Comments sheet — slides up from bottom */
-        .comments-sheet-overlay {
-            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0,0,0,0.4);
-            z-index: 3000;
-            display: none;
-            align-items: flex-end;
-        }
-        .comments-sheet-overlay.active { display: flex; }
-        .comments-sheet {
-            background: white;
-            border-radius: 24px 24px 0 0;
-            width: 100%;
-            max-height: 75vh;
-            display: flex;
-            flex-direction: column;
-            animation: slideUp 0.3s ease;
-        }
-        .comments-sheet-handle {
-            width: 36px; height: 4px;
-            background: var(--border-light);
-            border-radius: 2px;
-            margin: 12px auto 0;
-            flex-shrink: 0;
-        }
-        .comments-sheet-header {
-            display: flex; align-items: center; justify-content: space-between;
-            padding: 14px 20px 12px;
-            border-bottom: 1px solid var(--border-light);
-            flex-shrink: 0;
-        }
-        .comments-sheet-title { font-size: 16px; font-weight: 700; }
-        .comments-sheet-close {
-            width: 30px; height: 30px; border: none;
-            background: var(--bg-white); border-radius: 50%;
-            font-size: 16px; color: var(--text-secondary); cursor: pointer;
-            display: flex; align-items: center; justify-content: center;
-        }
-        .comments-sheet-list {
-            flex: 1; overflow-y: auto; padding: 12px 16px;
-            -webkit-overflow-scrolling: touch;
-        }
-        .comments-sheet-list::-webkit-scrollbar { display: none; }
-        .comments-sheet-input {
-            display: flex; gap: 8px;
-            padding: 10px 16px 20px;
-            border-top: 1px solid var(--border-light);
-            flex-shrink: 0;
-        }
-        .comments-sheet-input input {
-            flex: 1; padding: 10px 14px;
-            border: 2px solid var(--border-light); border-radius: 20px; font-size: 13px;
-        }
-        .comments-sheet-input input:focus { outline: none; border-color: var(--primary-pink); }
-        .comments-sheet-input button {
-            padding: 10px 16px; background: var(--primary-pink);
-            color: white; border: none; border-radius: 20px; font-size: 13px; cursor: pointer;
-        }
-
-        /* Reuse discussion-item styles */
-        .discussion-item { display: flex; gap: 8px; margin-bottom: 14px; }
-        .discussion-avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--primary-pink-light); display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; }
-        .discussion-content { flex: 1; }
-        .discussion-user { font-size: 13px; font-weight: 600; margin-bottom: 2px; }
-        .discussion-text { font-size: 13px; color: var(--text-primary); line-height: 1.5; }
-        .discussion-time { font-size: 10px; color: var(--text-secondary); margin-top: 3px; }
-        .top-badge {
-            display: inline-block; padding: 1px 6px;
-            background: linear-gradient(135deg, var(--primary-pink), var(--accent-lavender));
-            color: white; border-radius: 8px; font-size: 9px;
-            margin-left: 4px; vertical-align: middle;
-        }
-
-        /* Modal */
-        .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: none; justify-content: center; align-items: flex-end; z-index: 2000; animation: fadeIn 0.3s; }
-        .modal-overlay.active { display: flex; }
-        .modal-overlay.full { align-items: center; }
-        .modal { background: var(--card-white); border-radius: 24px 24px 0 0; width: 100%; max-height: 85vh; overflow-y: auto; animation: slideUp 0.3s; }
-        .modal.full-modal { border-radius: 24px; max-height: 90vh; }
-        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
-        .modal-header { padding: 20px; border-bottom: 1px solid var(--border-light); display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; background: var(--card-white); z-index: 10; }
-        .modal-title { font-size: 18px; font-weight: 600; }
-        .modal-close { width: 32px; height: 32px; border: none; background: var(--bg-white); border-radius: 50%; font-size: 18px; color: var(--text-secondary); cursor: pointer; }
-        .modal-content { padding: 20px; }
-
-        /* Form */
-        .form-group { margin-bottom: 16px; }
-        .form-label { font-size: 14px; font-weight: 500; margin-bottom: 8px; display: block; }
-        .form-input { width: 100%; padding: 12px 16px; border: 2px solid var(--border-light); border-radius: 12px; font-size: 14px; background: var(--card-white); }
-        .form-input:focus { outline: none; border-color: var(--primary-pink); }
-        .size-input-group { display: flex; align-items: center; gap: 8px; }
-        .size-input { width: 70px; padding: 10px; border: 2px solid var(--border-light); border-radius: 10px; text-align: center; }
-        .size-unit { font-size: 14px; color: var(--text-secondary); }
-
-        .intervention-options { display: flex; flex-wrap: wrap; gap: 8px; }
-        .intervention-btn { padding: 8px 14px; border: 2px solid var(--border-light); border-radius: 20px; background: var(--card-white); font-size: 13px; cursor: pointer; transition: all 0.3s; }
-        .intervention-btn:hover { border-color: var(--primary-pink); }
-        .intervention-btn.selected { background: var(--primary-pink); border-color: var(--primary-pink); color: white; }
-
-        .save-btn { width: 100%; padding: 16px; background: linear-gradient(135deg, var(--primary-pink) 0%, var(--primary-pink-dark) 100%); color: white; border: none; border-radius: 14px; font-size: 16px; font-weight: 600; cursor: pointer; }
-
-        /* Premium Paywall */
-        .paywall-content { text-align: center; padding: 32px 24px; }
-        .paywall-icon { width: 80px; height: 80px; margin: 0 auto 20px; background: linear-gradient(135deg, var(--primary-pink), var(--accent-lavender)); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 36px; }
-        .paywall-title { font-size: 22px; font-weight: 700; margin-bottom: 8px; color: var(--text-primary); }
-        .paywall-desc { font-size: 14px; color: var(--text-secondary); margin-bottom: 24px; }
-        .paywall-features { background: var(--bg-white); border-radius: 16px; padding: 20px; margin-bottom: 20px; text-align: left; }
-        .paywall-feature { display: flex; align-items: center; gap: 12px; padding: 10px 0; font-size: 14px; }
-        .paywall-feature .check { color: var(--success-green); font-size: 16px; }
-        .paywall-price { font-size: 28px; font-weight: 700; color: var(--primary-pink-dark); margin-bottom: 16px; }
-        .paywall-price span { font-size: 14px; font-weight: 400; }
-        .paywall-btn { width: 100%; padding: 14px; background: linear-gradient(135deg, var(--primary-pink), var(--primary-pink-dark)); color: white; border: none; border-radius: 14px; font-size: 15px; font-weight: 600; cursor: pointer; margin-bottom: 12px; }
-        .paywall-skip { background: none; border: none; color: var(--text-secondary); font-size: 13px; cursor: pointer; }
-
-        /* Search */
-        .search-filter { margin-bottom: 16px; }
-        .search-label { font-size: 13px; font-weight: 500; margin-bottom: 8px; display: block; }
-        .filter-chips { display: flex; flex-wrap: wrap; gap: 6px; }
-        .filter-chip { padding: 6px 12px; border: 1px solid var(--border-light); border-radius: 16px; font-size: 12px; cursor: pointer; background: white; }
-        .filter-chip.active { background: var(--primary-pink); border-color: var(--primary-pink); color: white; }
-
-        /* Profile Page */
-        .my-profile-header { text-align: center; padding: 16px; background: linear-gradient(135deg, var(--primary-pink-light) 0%, #F3E5F5 100%); border-radius: 20px; margin-bottom: 12px; flex-shrink: 0; }
-        .my-avatar { width: 72px; height: 72px; border-radius: 50%; background: linear-gradient(135deg, var(--primary-pink) 0%, var(--accent-lavender) 100%); margin: 0 auto 12px; display: flex; align-items: center; justify-content: center; font-size: 28px; }
-        .my-name { font-size: 18px; font-weight: 600; margin-bottom: 4px; }
-        .my-badge { display: inline-block; padding: 4px 12px; background: var(--primary-pink); color: white; border-radius: 12px; font-size: 12px; margin-bottom: 8px; }
-        .my-stats { display: flex; justify-content: center; gap: 20px; font-size: 13px; color: var(--text-secondary); }
-        .my-stats span { color: var(--primary-pink-dark); font-weight: 600; }
-
-        .toggle-row { display: flex; align-items: center; justify-content: space-between; padding: 14px; background: var(--card-white); border-radius: 12px; margin-bottom: 12px; }
-        .toggle-label { font-size: 14px; }
-        .toggle-switch { width: 44px; height: 24px; background: var(--border-light); border-radius: 12px; position: relative; cursor: pointer; transition: all 0.3s; }
-        .toggle-switch.active { background: var(--primary-pink); }
-        .toggle-switch::after { content: ''; position: absolute; width: 20px; height: 20px; background: white; border-radius: 50%; top: 2px; left: 2px; transition: all 0.3s; }
-        .toggle-switch.active::after { left: 22px; }
-
-        .settings-item { display: flex; align-items: center; justify-content: space-between; padding: 14px; background: var(--card-white); border-radius: 12px; margin-bottom: 8px; cursor: pointer; }
-        .settings-item-left { display: flex; align-items: center; gap: 12px; }
-        .settings-icon { width: 32px; height: 32px; border-radius: 8px; background: var(--primary-pink-light); display: flex; align-items: center; justify-content: center; }
-        .settings-label { font-size: 14px; }
-        .settings-arrow { color: var(--text-secondary); }
-
-        /* CTA Button */
-        .cta-button { display: flex; align-items: center; gap: 12px; padding: 16px; background: linear-gradient(135deg, #1A237E 0%, #3949AB 100%); border-radius: 16px; margin-bottom: 12px; cursor: pointer; box-shadow: 0 4px 15px rgba(57, 73, 171, 0.4); border: 2px solid #5C6BC0; }
-        .cta-icon { font-size: 24px; }
-        .cta-content { flex: 1; display: flex; flex-direction: column; }
-        .cta-title { font-size: 16px; font-weight: 700; color: #fff; }
-        .cta-subtitle { font-size: 12px; color: #B3E5FC; }
-        .cta-arrow { font-size: 20px; color: #fff; font-weight: bold; }
-
-        .premium-section { margin-bottom: 16px; }
-        .premium-item { display: flex; align-items: center; justify-content: space-between; padding: 14px; background: var(--card-white); border-radius: 12px; margin-bottom: 8px; cursor: pointer; }
-        .premium-item.locked::after { content: '🔒'; font-size: 14px; }
-        .premium-item.unlocked::after { content: '✓'; font-size: 14px; color: var(--success-green); font-weight: bold; }
-        .premium-left { display: flex; align-items: center; gap: 12px; }
-        .premium-icon { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
-        .premium-icon.export { background: #FFF3E0; }
-        .premium-icon.analysis { background: #E8F5E9; }
-        .premium-icon.consult { background: #E3F2FD; }
-        .premium-text h4 { font-size: 14px; font-weight: 600; }
-        .premium-text p { font-size: 12px; color: var(--text-secondary); }
-
-        .toast { position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%) translateY(100px); background: var(--text-primary); color: white; padding: 12px 24px; border-radius: 24px; font-size: 14px; opacity: 0; transition: all 0.3s; z-index: 3000; }
-        .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
-
-        .hidden { display: none !important; }
-    </style>
+/* Toast */
+.toast {
+  position: absolute; bottom: 90px; left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: #333; color: white;
+  padding: 10px 20px; border-radius: 20px; font-size: 13px;
+  opacity: 0; transition: all 0.3s; z-index: 1000; white-space: nowrap;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+</style>
 </head>
 <body>
-    <div class="phone-frame">
-        <div class="status-bar">
-            <span class="time" id="currentTime">9:41</span>
-            <div class="lang-toggle" onclick="toggleLanguage()"><span id="langLabel">EN</span></div>
+<div class="phone">
+
+  <!-- Status Bar -->
+  <div class="status">
+    <span class="status-time" id="time">19:43</span>
+    <button class="lang-btn" onclick="toggleLang()" id="langBtn">EN</button>
+  </div>
+
+  <!-- Scrollable Content -->
+  <div class="content" id="content">
+
+    <!-- ── RECORDS PAGE ── -->
+    <div class="page active" id="page-records">
+
+      <!-- Hero -->
+      <div class="hero">
+        <div class="linked-badge" id="t-linked">🏥 Linked to: Dr. Wang @ iKang Health Center</div>
+        <div class="hero-title" id="t-journey">Your Health Journey</div>
+        <div class="hero-sub" id="t-sub">Track your interventions → See your results → Monitor your health</div>
+        <div class="hero-stats">
+          <div class="stat">
+            <div class="stat-val">3</div>
+            <div class="stat-lbl" id="t-records">Records</div>
+          </div>
+          <div class="stat">
+            <div class="stat-val">18</div>
+            <div class="stat-lbl" id="t-months">Months</div>
+          </div>
+          <div class="followup-box">
+            <div class="followup-num">180</div>
+            <div class="followup-lbl" id="t-followup">Days to Next<br>Follow-up</div>
+          </div>
         </div>
+      </div>
 
-        <div class="content">
-            <!-- Home / Records Page -->
-            <div class="tab-page active" id="home-page">
-                <div class="hero-section">
-                    <div class="clinic-badge" data-en="Linked to: Dr. Wang @ Premium Health Center" data-zh="关联机构：王医生 @ 优康体检中心">Linked to: Dr. Wang @ Premium Health Center</div>
-                    <div class="hero-title" data-en="Your Health Journey" data-zh="你的健康历程">Your Health Journey</div>
-                    <div class="hero-desc" data-en="Track your interventions → See your results → Monitor your health" data-zh="记录干预选择 → 追踪健康结果 → 监测身体变化">Track your interventions → See your results → Monitor your health</div>
-                    <div class="hero-stat">
-                        <div class="hero-stat-item">
-                            <div class="hero-stat-value" data-en="3" data-zh="3">3</div>
-                            <div class="hero-stat-label" data-en="Records" data-zh="条记录">Records</div>
-                        </div>
-                        <div class="hero-stat-item">
-                            <div class="hero-stat-value" data-en="18" data-zh="18">18</div>
-                            <div class="hero-stat-label" data-en="Months" data-zh="个月">Months</div>
-                        </div>
-                        <div class="hero-stat-item highlight">
-                            <div class="hero-stat-value" data-en="180" data-zh="180">180</div>
-                            <div class="hero-stat-label" data-en="Days to Next Follow-up" data-zh="天">Days to Next Follow-up</div>
-                        </div>
-                    </div>
-                </div>
+      <!-- Timeline -->
+      <div class="sec-title" id="t-timeline">My Timeline</div>
 
-                <!-- My Timeline -->
-                <div class="section-title" data-en="My Timeline" data-zh="我的时间线">My Timeline</div>
-
-                <div class="timeline-card">
-                    <div class="timeline-header">
-                        <span class="timeline-date">2025-03</span>
-                    </div>
-                    <div class="timeline-intervention">
-                        <span class="intervention-tag" data-en="TCM" data-zh="中药">TCM</span>
-                        <span class="intervention-tag" data-en="Exercise" data-zh="运动">Exercise</span>
-                    </div>
-                    <div class="timeline-result">
-                        <span class="result-indicator stable"></span>
-                        <span class="result-text" data-en="8×6mm → Stable" data-zh="8×6mm → 稳定">8×6mm → Stable</span>
-                    </div>
-                    <div class="timeline-attachment">
-                        <div class="attachment-item"><span class="attachment-icon">📄</span> <span data-en="B-ultrasound report attached" data-zh="已附加B超报告">B-ultrasound report attached</span></div>
-                    </div>
-                </div>
-
-                <div class="timeline-card">
-                    <div class="timeline-header">
-                        <span class="timeline-date">2025-01</span>
-                    </div>
-                    <div class="timeline-intervention">
-                        <span class="intervention-tag" data-en="Ablation" data-zh="消融">Ablation</span>
-                    </div>
-                    <div class="timeline-result">
-                        <span class="result-indicator shrink"></span>
-                        <span class="result-text" data-en="10×8mm → Shrunk 20%" data-zh="10×8mm → 缩小20%">10×8mm → Shrunk 20%</span>
-                    </div>
-                </div>
-
-                <div class="timeline-card">
-                    <div class="timeline-header">
-                        <span class="timeline-date">2024-09</span>
-                    </div>
-                    <div class="timeline-intervention">
-                        <span class="intervention-tag" data-en="Diagnosed" data-zh="确诊">Diagnosed</span>
-                    </div>
-                    <div class="timeline-result">
-                        <span class="result-indicator grow"></span>
-                        <span class="result-text" data-en="Found: 10×8mm" data-zh="发现：10×8mm">Found: 10×8mm</span>
-                    </div>
-                </div>
-
-                <button class="add-record-btn" onclick="openAddRecord()">
-                    <span>+</span> <span data-en="Add New Record" data-zh="添加新记录">Add New Record</span>
-                </button>
-            </div>
-
-            </div>
-
-            <!-- Profile Page -->
-            <div class="tab-page" id="profile-page">
-                <div class="my-profile-header">
-                    <div class="my-avatar">👩‍⚕️</div>
-                    <div class="my-name" data-en="My Profile" data-zh="我的主页">My Profile</div>
-                    <span class="my-badge" data-en="Contributor" data-zh="贡献者">Contributor</span>
-                    <div class="my-stats">
-                        <div><span>3</span> <span data-en="records" data-zh="条记录">records</span></div>
-                        <div><span>18</span> <span data-en="months" data-zh="个月">months</span></div>
-                    </div>
-                    <div style="margin-top:8px; font-size:12px; color:#F48FB1; font-weight:500;">
-                        🏥 <span data-en="Linked to: Dr. Wang @ iKang Health Center" data-zh="关联机构：王医生 @ 爱康国宾体检中心">Linked to: Dr. Wang @ iKang Health Center</span>
-                    </div>
-                </div>
-
-                <div class="toggle-row">
-                    <span class="toggle-label" data-en="Auto-sync data with my original clinic" data-zh="自动与原诊所同步数据">Auto-sync data with my original clinic</span>
-                    <div class="toggle-switch active" id="shareToggle" onclick="toggleShare()"></div>
-                </div>
-
-                <div class="section-title" data-en="My VIP Clinic Services" data-zh="我的VIP体检中心服务">My VIP Clinic Services</div>
-
-                <div class="premium-item" onclick="openPaywall('export')">
-                    <div class="premium-left">
-                        <div class="premium-icon export">📄</div>
-                        <div class="premium-text">
-                            <h4 data-en="Export PDF Report" data-zh="导出PDF报告">Export PDF Report</h4>
-                            <p data-en="Generate doctor-ready reports" data-zh="生成可直接给医生的报告">Generate doctor-ready reports</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="premium-item" onclick="openPaywall('analysis')">
-                    <div class="premium-left">
-                        <div class="premium-icon analysis">📊</div>
-                        <div class="premium-text">
-                            <h4 data-en="Advanced Analytics" data-zh="进阶数据分析">Advanced Analytics</h4>
-                            <p data-en="Detailed charts & comparisons" data-zh="详细图表与对比">Detailed charts & comparisons</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="premium-item" onclick="openPaywall('consult')">
-                    <div class="premium-left">
-                        <div class="premium-icon consult">👨‍⚕️</div>
-                        <div class="premium-text">
-                            <h4 data-en="Expert Consultation" data-zh="专家咨询">Expert Consultation</h4>
-                            <p data-en="One-on-one with specialists" data-zh="三甲专家一对一">One-on-one with specialists</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="section-title" data-en="Settings" data-zh="设置">Settings</div>
-                <div class="settings-item" onclick="showToast('Coming soon')"><div class="settings-item-left"><div class="settings-icon">🏥</div><span class="settings-label" data-en="Book Checkup" data-zh="预约体检">Book Checkup</span></div><span class="settings-arrow">›</span></div>
-                <div class="settings-item" onclick="showToast('Coming soon')"><div class="settings-item-left"><div class="settings-icon">❓</div><span class="settings-label" data-en="Help & Feedback" data-zh="帮助与反馈">Help & Feedback</span></div><span class="settings-arrow">›</span></div>
-
-                <!-- CTA Button pinned at bottom of profile page -->
-                <div style="padding: 16px 0 8px 0;">
-                <div class="cta-button" onclick="showToast('Booking your follow-up...')">
-                    <div class="cta-icon">📅</div>
-                    <div class="cta-content">
-                        <span class="cta-title" data-en="1-Click Book Follow-up" data-zh="一键预约复查">1-Click Book Follow-up</span>
-                        <span class="cta-subtitle" data-en="at Premium Health Center" data-zh="在优康体检中心">at Premium Health Center</span>
-                    </div>
-                    <div class="cta-arrow">→</div>
-                </div>
-                </div>
-            </div>
+      <div class="tcard">
+        <div class="tcard-date">2025-03</div>
+        <div class="tags">
+          <span class="tag" id="t-tcm">TCM</span>
+          <span class="tag" id="t-exercise">Exercise</span>
         </div>
-
-        <!-- Bottom Navigation -->
-        <div class="bottom-nav">
-            <div class="nav-item active" data-tab="home" onclick="switchTab('home')">
-                <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z"/></svg>
-                <span class="nav-label" data-en="Records" data-zh="记录">Records</span>
-            </div>
-            <div class="nav-item" data-tab="profile" onclick="switchTab('profile')">
-                <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
-                <span class="nav-label" data-en="Profile" data-zh="我的">Profile</span>
-            </div>
+        <div class="result">
+          <span class="dot amber"></span>
+          <span id="t-r1">8×6mm → Stable</span>
         </div>
+        <div class="attach">
+          <div class="attach-row">📄 <span id="t-attach">B-ultrasound report attached</span></div>
+        </div>
+      </div>
+
+      <div class="tcard">
+        <div class="tcard-date">2025-01</div>
+        <div class="tags"><span class="tag" id="t-ablation">Ablation</span></div>
+        <div class="result">
+          <span class="dot green"></span>
+          <span id="t-r2">10×8mm → Shrunk 20%</span>
+        </div>
+      </div>
+
+      <div class="tcard">
+        <div class="tcard-date">2024-09</div>
+        <div class="tags"><span class="tag" id="t-diag">Diagnosed</span></div>
+        <div class="result">
+          <span class="dot red"></span>
+          <span id="t-r3">Found: 10×8mm</span>
+        </div>
+      </div>
+
+      <button class="add-btn" onclick="openModal()" id="t-addbtn">
+        <span>＋</span> <span id="t-addlbl">Add New Record</span>
+      </button>
     </div>
 
-    <!-- User Profile Page -->
-    <div class="user-profile-page" id="userProfilePage">
-        <div class="profile-header-section">
-            <div class="profile-back" onclick="closeUserProfile()">
-                <span>‹</span> <span data-en="Back" data-zh="返回">Back</span>
-            </div>
-            <div class="profile-main">
-                <div class="profile-avatar-large" id="profileAvatar">🌸</div>
-                <div class="profile-info">
-                    <div class="profile-name" id="profileName">姐妹 #2847</div>
-                    <div class="profile-stats">
-                        <span>18</span> <span data-en="months" data-zh="个月">months</span>
-                        <span class="dot"></span>
-                        <span>3</span> <span data-en="records" data-zh="条记录">records</span>
-                        <span class="dot"></span>
-                        <span>156</span> <span data-en="comments" data-zh="条评论">comments</span>
-                    </div>
-                </div>
-            </div>
+    <!-- ── PROFILE PAGE ── -->
+    <div class="page" id="page-profile">
 
-            <div class="condition-summary">
-                <div class="condition-item">
-                    <span class="label" data-en="Diagnosis" data-zh="诊断">Diagnosis</span>
-                    <span class="value" id="profileDiagnosis">Bilateral</span>
-                </div>
-                <div class="condition-item">
-                    <span class="label" data-en="Grade" data-zh="分级">Grade</span>
-                    <span class="value" id="profileGrade">Grade 2</span>
-                </div>
-                <div class="condition-item">
-                    <span class="label" data-en="Size" data-zh="尺寸">Size</span>
-                    <span class="value" id="profileSize">12mm</span>
-                </div>
-            </div>
+      <div class="profile-header">
+        <div class="avatar">👩‍⚕️</div>
+        <div class="profile-name" id="t-pname">My Profile</div>
+        <div class="badge" id="t-contrib">Contributor</div>
+        <div class="profile-stats">
+          <div><b>3</b> <span id="t-prec">records</span></div>
+          <div><b>18</b> <span id="t-pmon">months</span></div>
         </div>
+        <div class="clinic-link">🏥 <span id="t-cliniclink">Linked to: Dr. Wang @ iKang Health Center</span></div>
+      </div>
 
-        <div class="timeline-section">
-            <div class="timeline-title">📖 <span data-en="Full Timeline" data-zh="完整时间线">Full Timeline</span></div>
-            <div id="userTimeline"></div>
-        </div>
+      <div class="toggle-row">
+        <span class="toggle-label" id="t-sync">Auto-sync data with my original clinic</span>
+        <div class="toggle"></div>
+      </div>
 
-        <!-- Comments bar: thin, always at bottom -->
-        <div class="comments-bar" onclick="openComments()">
-            <span style="font-size:18px">💬</span>
-            <span class="comments-bar-text" data-en="Comments" data-zh="评论">Comments</span>
-            <span class="comments-bar-count">12</span>
-            <span class="comments-bar-arrow">›</span>
+      <div class="sec-title" id="t-vip">My VIP Clinic Services</div>
+
+      <div class="vip-item" onclick="toast('Coming soon')">
+        <div class="vip-icon pdf">📄</div>
+        <div class="vip-text">
+          <h4 id="t-pdf">Export PDF Report</h4>
+          <p id="t-pdf2">Generate doctor-ready reports</p>
         </div>
+      </div>
+
+      <div class="vip-item" onclick="toast('Coming soon')">
+        <div class="vip-icon analytics">📊</div>
+        <div class="vip-text">
+          <h4 id="t-analytics">Advanced Analytics</h4>
+          <p id="t-analytics2">Detailed charts & comparisons</p>
+        </div>
+      </div>
+
+      <div class="vip-item" onclick="toast('Coming soon')">
+        <div class="vip-icon consult">👨‍⚕️</div>
+        <div class="vip-text">
+          <h4 id="t-consult">Expert Consultation</h4>
+          <p id="t-consult2">One-on-one with specialists</p>
+        </div>
+      </div>
+
+      <div class="sec-title" style="margin-top:16px;" id="t-settings">Settings</div>
+
+      <div class="settings-item" onclick="toast('Coming soon')">
+        <div class="settings-left">
+          <div class="settings-icon">🔔</div>
+          <span class="settings-label" id="t-reminder">Follow-up Reminder</span>
+        </div>
+        <span class="settings-arrow">›</span>
+      </div>
+
+      <div class="settings-item" onclick="toast('Coming soon')">
+        <div class="settings-left">
+          <div class="settings-icon">❓</div>
+          <span class="settings-label" id="t-help">Help & Feedback</span>
+        </div>
+        <span class="settings-arrow">›</span>
+      </div>
+
+      <!-- CTA Book Button -->
+      <div class="cta-book" onclick="toast('Booking your follow-up...')">
+        <div class="cta-cal">📅</div>
+        <div class="cta-text">
+          <div class="cta-title" id="t-cta">1-Click Book Follow-up</div>
+          <div class="cta-sub" id="t-ctasub">at iKang Health Center</div>
+        </div>
+        <div class="cta-arrow">→</div>
+      </div>
+
     </div>
+  </div><!-- end .content -->
 
-    <!-- Comments Sheet (outside profile page, full screen overlay) -->
-    <div class="comments-sheet-overlay" id="commentsSheet" onclick="closeCommentsOnOverlay(event)">
-        <div class="comments-sheet">
-            <div class="comments-sheet-handle"></div>
-            <div class="comments-sheet-header">
-                <span class="comments-sheet-title">💬 <span data-en="Comments" data-zh="评论">Comments</span> <span style="font-weight:400;color:var(--text-secondary);font-size:13px">(12)</span></span>
-                <button class="comments-sheet-close" onclick="closeComments()">✕</button>
-            </div>
-            <div class="comments-sheet-list" id="discussionList">
-                <div class="discussion-item">
-                    <div class="discussion-avatar">🌺</div>
-                    <div class="discussion-content">
-                        <div class="discussion-user">姐妹 #3021 <span class="top-badge">Top</span></div>
-                        <div class="discussion-text" data-en="What TCM doctor did you use? My nodules are also Grade 2 bilateral." data-zh="你用的哪位中医？我也是双侧2级">What TCM doctor did you use? My nodules are also Grade 2 bilateral.</div>
-                        <div class="discussion-time">2 hours ago · 24 likes</div>
-                    </div>
-                </div>
-                <div class="discussion-item">
-                    <div class="discussion-avatar">🌿</div>
-                    <div class="discussion-content">
-                        <div class="discussion-user">姐妹 #2847 <span class="top-badge">Top</span></div>
-                        <div class="discussion-text" data-en="Same TCM routine for 3 months — my nodule shrank too. Keep going!" data-zh="同款中药方3个月，结节也缩小了！坚持！">Same TCM routine for 3 months — my nodule shrank too. Keep going!</div>
-                        <div class="discussion-time">1 hour ago · 18 likes</div>
-                    </div>
-                </div>
-                <div class="discussion-item">
-                    <div class="discussion-avatar">🌸</div>
-                    <div class="discussion-content">
-                        <div class="discussion-user">姐妹 #4102</div>
-                        <div class="discussion-text" data-en="Did you feel side effects from TCM? I'm hesitant to start." data-zh="喝中药有副作用吗？我有点担心">Did you feel side effects from TCM? I'm hesitant to start.</div>
-                        <div class="discussion-time">5 hours ago · 8 likes</div>
-                    </div>
-                </div>
-                <div class="discussion-item">
-                    <div class="discussion-avatar">⭐</div>
-                    <div class="discussion-content">
-                        <div class="discussion-user">姐妹 #1899</div>
-                        <div class="discussion-text" data-en="How often do you do ultrasound? Every 3 or 6 months?" data-zh="你多久复查一次B超？3个月还是6个月？">How often do you do ultrasound? Every 3 or 6 months?</div>
-                        <div class="discussion-time">Yesterday · 5 likes</div>
-                    </div>
-                </div>
-            </div>
-            <div class="comments-sheet-input">
-                <input type="text" placeholder="Ask or share your experience..." id="commentInput">
-                <button onclick="postComment()">Post</button>
-            </div>
-        </div>
+  <!-- Bottom Nav -->
+  <div class="nav">
+    <div class="nav-item active" id="nav-records" onclick="switchTab('records')">
+      <span class="nav-icon">☰</span>
+      <span class="nav-label" id="t-nav1">Records</span>
     </div>
-
-    <!-- Add Record Modal -->
-    <div class="modal-overlay" id="addRecordModal">
-        <div class="modal">
-            <div class="modal-header">
-                <span class="modal-title" data-en="Add Record" data-zh="添加记录">Add Record</span>
-                <button class="modal-close" onclick="closeAddRecord()">×</button>
-            </div>
-            <div class="modal-content">
-                <div class="form-group">
-                    <label class="form-label" data-en="Date" data-zh="日期">Date</label>
-                    <input type="date" class="form-input" value="2025-03-15">
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label" data-en="Nodule Size (mm)" data-zh="结节大小(mm)">Nodule Size (mm)</label>
-                    <div class="size-input-group">
-                        <input type="number" class="size-input" placeholder="0">
-                        <span class="size-unit">mm</span>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label" data-en="What did you do?" data-zh="这次做了什么干预？">What did you do?</label>
-                    <div class="intervention-options" id="newRecordInterventions">
-                        <button class="intervention-btn" onclick="toggleIntervention(this)">中药</button>
-                        <button class="intervention-btn" onclick="toggleIntervention(this)">西药</button>
-                        <button class="intervention-btn" onclick="toggleIntervention(this)">运动</button>
-                        <button class="intervention-btn" onclick="toggleIntervention(this)">饮食调理</button>
-                        <button class="intervention-btn" onclick="toggleIntervention(this)">手术</button>
-                        <button class="intervention-btn" onclick="toggleIntervention(this)">消融</button>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label" data-en="Result" data-zh="检查结果">Result</label>
-                    <div class="intervention-options">
-                        <button class="intervention-btn" data-en="Shrunk" data-zh="缩小" onclick="toggleIntervention(this)">缩小</button>
-                        <button class="intervention-btn selected" data-en="Stable" data-zh="稳定" onclick="toggleIntervention(this)">稳定</button>
-                        <button class="intervention-btn" data-en="Grow" data-zh="增大" onclick="toggleIntervention(this)">增大</button>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label" data-en="Attach Reports (Optional)" data-zh="附加报告（可选）">Attach Reports (Optional)</label>
-                    <div class="intervention-options">
-                        <button class="intervention-btn" data-en="B-ultrasound" data-zh="B超">B-ultrasound</button>
-                        <button class="intervention-btn" data-en="MRI" data-zh="磁共振">MRI</button>
-                        <button class="intervention-btn" data-en="Biopsy" data-zh="穿刺">Biopsy</button>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label" data-en="Notes" data-zh="备注">Notes</label>
-                    <textarea class="form-input" rows="2" placeholder="医生说的话、感受变化..."></textarea>
-                </div>
-
-                <button class="save-btn" onclick="saveRecord()">
-                    <span data-en="Save Record" data-zh="保存记录">Save Record</span>
-                </button>
-            </div>
-        </div>
+    <div class="nav-item" id="nav-profile" onclick="switchTab('profile')">
+      <span class="nav-icon">👤</span>
+      <span class="nav-label" id="t-nav2">Profile</span>
     </div>
+  </div>
 
-    <!-- Premium Paywall Modal -->
-    <div class="modal-overlay full" id="paywallModal">
-        <div class="modal full-modal">
-            <div class="paywall-content">
-                <div class="paywall-icon">💎</div>
-                <div class="paywall-title" data-en="Upgrade to Premium" data-zh="升级高级版">Upgrade to Premium</div>
-                <div class="paywall-desc" data-en="Unlock advanced features" data-zh="解锁高级功能">Unlock advanced features</div>
+  <!-- Add Record Modal -->
+  <div class="overlay" id="overlay" onclick="closeModal(event)">
+    <div class="modal" onclick="event.stopPropagation()">
+      <div class="modal-head">
+        <span class="modal-title" id="t-modalTitle">Add Record</span>
+        <button class="modal-close" onclick="closeModal()">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="date-display" id="t-dateDisplay">2025年3月15日</div>
 
-                <div class="paywall-features">
-                    <div class="paywall-feature"><span class="check">✓</span> <span data-en="Export PDF reports" data-zh="导出PDF报告">Export PDF reports</span></div>
-                    <div class="paywall-feature"><span class="check">✓</span> <span data-en="Detailed analysis charts" data-zh="详细分析图表">Detailed analysis charts</span></div>
-                    <div class="paywall-feature"><span class="check">✓</span> <span data-en="Expert consultation" data-zh="专家咨询">Expert consultation</span></div>
-                </div>
-
-                <div class="paywall-price">¥29<span>/mo</span></div>
-                <button class="paywall-btn" onclick="unlockPremium()" data-en="Upgrade Now" data-zh="立即升级">Upgrade Now</button>
-                <button class="paywall-skip" onclick="closePaywall()" data-en="Maybe Later" data-zh="稍后">Maybe Later</button>
-            </div>
+        <div class="field-label" id="t-sizeLabel">Nodule Size (mm)</div>
+        <div class="size-row">
+          <input class="size-input" type="number" placeholder="0" id="sizeInput">
+          <span class="size-unit">mm</span>
         </div>
+
+        <div class="field-label" id="t-whatLabel">What did you do?</div>
+        <div class="chips">
+          <span class="chip" onclick="toggleChip(this)" id="c1">中药</span>
+          <span class="chip" onclick="toggleChip(this)" id="c2">西药</span>
+          <span class="chip" onclick="toggleChip(this)" id="c3">运动</span>
+          <span class="chip" onclick="toggleChip(this)" id="c4">饮食调理</span>
+          <span class="chip" onclick="toggleChip(this)" id="c5">手术</span>
+          <span class="chip" onclick="toggleChip(this)" id="c6">消融</span>
+        </div>
+
+        <div class="field-label" id="t-resultLabel">Result</div>
+        <div class="chips">
+          <span class="chip" onclick="selectResult(this)" id="r1">缩小</span>
+          <span class="chip sel" onclick="selectResult(this)" id="r2">稳定</span>
+          <span class="chip" onclick="selectResult(this)" id="r3">增大</span>
+        </div>
+
+        <div class="field-label" id="t-attachLabel">Attach Reports (Optional)</div>
+        <div class="chips">
+          <span class="chip" style="color:#007AFF;border-color:#007AFF" onclick="toggleChip(this)">B-ultrasound</span>
+          <span class="chip" style="color:#007AFF;border-color:#007AFF" onclick="toggleChip(this)">MRI</span>
+          <span class="chip" style="color:#007AFF;border-color:#007AFF" onclick="toggleChip(this)">Biopsy</span>
+        </div>
+
+        <div class="field-label" id="t-notesLabel">Notes</div>
+        <textarea class="notes-input" id="t-notesPlaceholder" placeholder="医生说的话、感受变化..."></textarea>
+
+        <button class="save-btn" onclick="saveRecord()" id="t-saveBtn">Save Record</button>
+      </div>
     </div>
+  </div>
 
-    <div class="toast" id="toast"></div>
+  <!-- Toast -->
+  <div class="toast" id="toastEl"></div>
 
-    <script>
-        let currentLang = 'en';
-        let currentUserId = null;
+</div><!-- end .phone -->
 
-        const userProfiles = {
-            user1: {
-                name: 'Sister #2847', nameZh: '姐妹 #2847', avatar: '🌸',
-                diagnosis: 'Bilateral', diagnosisZh: '双侧',
-                grade: 'Grade 2', gradeZh: '2级',
-                size: '12mm', sizeZh: '12mm',
-                timeline: [
-                    { date: '2024-09', intervention: 'Diagnosed', interventionZh: '确诊', size: '10×8mm', result: 'Found', resultZh: '发现' },
-                    { date: '2024-12', intervention: 'TCM + Yoga', interventionZh: '中药+瑜伽', size: '11×9mm', result: 'Stable', resultZh: '稳定' },
-                    { date: '2025-03', intervention: 'TCM + Exercise + Diet', interventionZh: '中药+运动+饮食', size: '8×6mm', result: 'Shrunk', resultZh: '缩小', attachment: 'B-ultrasound' }
-                ]
-            },
-            user2: {
-                name: 'Sister #1923', nameZh: '姐妹 #1923', avatar: '💪',
-                diagnosis: 'Right side', diagnosisZh: '右侧',
-                grade: 'Grade 3', gradeZh: '3级',
-                size: '15mm', sizeZh: '15mm',
-                timeline: [
-                    { date: '2024-03', intervention: 'Diagnosed', interventionZh: '确诊', size: '15mm', result: 'Found', resultZh: '发现' },
-                    { date: '2024-06', intervention: 'Ablation', interventionZh: '消融', size: '15mm', result: 'Surgery', resultZh: '手术' },
-                    { date: '2025-03', intervention: 'Follow-up', interventionZh: '复查', size: '12mm', result: 'Shrunk', resultZh: '缩小' }
-                ]
-            },
-            user3: {
-                name: 'Sister #3651', nameZh: '姐妹 #3651', avatar: '🌺',
-                diagnosis: 'Left side', diagnosisZh: '左侧',
-                grade: 'Grade 4a', gradeZh: '4a级',
-                size: '18mm', sizeZh: '18mm',
-                timeline: [
-                    { date: '2023-03', intervention: 'Diagnosed', interventionZh: '确诊', size: '18mm', result: 'Found', resultZh: '发现' },
-                    { date: '2023-06', intervention: 'Ablation', interventionZh: '消融', size: '18mm', result: 'Surgery', resultZh: '手术' },
-                    { date: '2024-03', intervention: 'TCM', interventionZh: '中药', size: '0mm', result: 'Gone', resultZh: '消失' },
-                    { date: '2025-03', intervention: 'Annual checkup', interventionZh: '年度复查', size: '0mm', result: 'Clear', resultZh: '正常' }
-                ]
-            }
-        };
+<script>
+// ── Time ──
+function updateTime() {
+  const now = new Date();
+  document.getElementById('time').textContent =
+    now.getHours() + ':' + String(now.getMinutes()).padStart(2,'0');
+}
+updateTime();
+setInterval(updateTime, 30000);
 
-        function updateTime() {
-            const now = new Date(), h = now.getHours(), m = now.getMinutes().toString().padStart(2, '0');
-            document.getElementById('currentTime').textContent = `${h}:${m}`;
-        }
-        updateTime(); setInterval(updateTime, 60000);
+// ── Tab Switch ──
+function switchTab(tab) {
+  ['records','profile'].forEach(t => {
+    document.getElementById('page-'+t).classList.toggle('active', t===tab);
+    document.getElementById('nav-'+t).classList.toggle('active', t===tab);
+  });
+  document.getElementById('content').scrollTop = 0;
+}
 
-        function toggleLanguage() {
-            currentLang = currentLang === 'en' ? 'zh' : 'en';
-            document.getElementById('langLabel').textContent = currentLang === 'en' ? 'EN' : '中';
-            updateAllText();
-        }
+// ── Modal ──
+function openModal() {
+  document.getElementById('overlay').classList.add('show');
+}
+function closeModal(e) {
+  if (!e || e.target === document.getElementById('overlay')) {
+    document.getElementById('overlay').classList.remove('show');
+  }
+}
+function toggleChip(el) { el.classList.toggle('sel'); }
+function selectResult(el) {
+  el.parentElement.querySelectorAll('.chip').forEach(c => c.classList.remove('sel'));
+  el.classList.add('sel');
+}
+function saveRecord() {
+  toast(lang==='en' ? 'Record saved!' : '记录已保存！');
+  closeModal();
+}
 
-        function updateAllText() {
-            document.querySelectorAll('[data-en]').forEach(el => {
-                el.textContent = currentLang === 'en' ? el.getAttribute('data-en') : el.getAttribute('data-zh');
-            });
+// ── Toast ──
+function toast(msg) {
+  const el = document.getElementById('toastEl');
+  el.textContent = msg;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 2200);
+}
 
-            // Update user profile if open
-            if (currentUserId) {
-                const user = userProfiles[currentUserId];
-                document.getElementById('profileName').textContent = currentLang === 'en' ? user.name : user.nameZh;
-                document.getElementById('profileDiagnosis').textContent = currentLang === 'en' ? user.diagnosis : user.diagnosisZh;
-                document.getElementById('profileGrade').textContent = currentLang === 'en' ? user.grade : user.gradeZh;
-                document.getElementById('profileSize').textContent = currentLang === 'en' ? user.size : user.sizeZh;
-                renderUserTimeline(user);
-            }
-        }
+// ── Language ──
+let lang = 'en';
+const strings = {
+  en: {
+    'langBtn':'中',
+    't-linked':'🏥 Linked to: Dr. Wang @ iKang Health Center',
+    't-journey':'Your Health Journey',
+    't-sub':'Track your interventions → See your results → Monitor your health',
+    't-records':'Records','t-months':'Months',
+    't-followup':'Days to Next\nFollow-up',
+    't-timeline':'My Timeline',
+    't-tcm':'TCM','t-exercise':'Exercise','t-ablation':'Ablation','t-diag':'Diagnosed',
+    't-r1':'8×6mm → Stable','t-r2':'10×8mm → Shrunk 20%','t-r3':'Found: 10×8mm',
+    't-attach':'B-ultrasound report attached',
+    't-addbtn':null,'t-addlbl':'Add New Record',
+    't-pname':'My Profile','t-contrib':'Contributor',
+    't-prec':'records','t-pmon':'months',
+    't-cliniclink':'Linked to: Dr. Wang @ iKang Health Center',
+    't-sync':'Auto-sync data with my original clinic',
+    't-vip':'My VIP Clinic Services',
+    't-pdf':'Export PDF Report','t-pdf2':'Generate doctor-ready reports',
+    't-analytics':'Advanced Analytics','t-analytics2':'Detailed charts & comparisons',
+    't-consult':'Expert Consultation','t-consult2':'One-on-one with specialists',
+    't-settings':'Settings',
+    't-reminder':'Follow-up Reminder','t-help':'Help & Feedback',
+    't-cta':'1-Click Book Follow-up','t-ctasub':'at iKang Health Center',
+    't-nav1':'Records','t-nav2':'Profile',
+    't-modalTitle':'Add Record','t-dateDisplay':'March 15, 2025',
+    't-sizeLabel':'Nodule Size (mm)','t-whatLabel':'What did you do?',
+    't-resultLabel':'Result','t-attachLabel':'Attach Reports (Optional)',
+    't-notesLabel':'Notes',
+    't-saveBtn':'Save Record',
+    'c1':'TCM','c2':'Western Med','c3':'Exercise','c4':'Diet','c5':'Surgery','c6':'Ablation',
+    'r1':'Shrunk','r2':'Stable','r3':'Grew',
+  },
+  zh: {
+    'langBtn':'EN',
+    't-linked':'🏥 关联机构：王医生 @ 爱康国宾体检中心',
+    't-journey':'我的健康旅程',
+    't-sub':'记录干预 → 查看结果 → 监测健康',
+    't-records':'条记录','t-months':'个月',
+    't-followup':'距下次复查\n天数',
+    't-timeline':'我的时间线',
+    't-tcm':'中药','t-exercise':'运动','t-ablation':'消融','t-diag':'确诊',
+    't-r1':'8×6mm → 稳定','t-r2':'10×8mm → 缩小20%','t-r3':'发现：10×8mm',
+    't-attach':'已附加B超报告',
+    't-addbtn':null,'t-addlbl':'添加新记录',
+    't-pname':'我的主页','t-contrib':'贡献者',
+    't-prec':'条记录','t-pmon':'个月',
+    't-cliniclink':'关联机构：王医生 @ 爱康国宾体检中心',
+    't-sync':'自动与原诊所同步数据',
+    't-vip':'我的VIP体检中心服务',
+    't-pdf':'导出PDF报告','t-pdf2':'生成可直接给医生的报告',
+    't-analytics':'进阶数据分析','t-analytics2':'详细图表与对比',
+    't-consult':'专家咨询','t-consult2':'三甲专家一对一',
+    't-settings':'设置',
+    't-reminder':'复查提醒','t-help':'帮助与反馈',
+    't-cta':'一键预约复查','t-ctasub':'爱康国宾体检中心',
+    't-nav1':'记录','t-nav2':'我的',
+    't-modalTitle':'添加记录','t-dateDisplay':'2025年3月15日',
+    't-sizeLabel':'结节大小（mm）','t-whatLabel':'你做了什么？',
+    't-resultLabel':'结果','t-attachLabel':'附加报告（可选）',
+    't-notesLabel':'备注',
+    't-saveBtn':'保存记录',
+    'c1':'中药','c2':'西药','c3':'运动','c4':'饮食调理','c5':'手术','c6':'消融',
+    'r1':'缩小','r2':'稳定','r3':'增大',
+  }
+};
 
-        function switchTab(tabName) {
-            document.querySelectorAll('.nav-item').forEach(i => i.classList.toggle('active', i.dataset.tab === tabName));
-            document.querySelectorAll('.tab-page').forEach(p => p.classList.toggle('active', p.id === tabName + '-page'));
-        }
-
-        function openUserProfile(userId) {
-            currentUserId = userId;
-            const user = userProfiles[userId];
-            document.getElementById('profileAvatar').textContent = user.avatar;
-            document.getElementById('profileName').textContent = currentLang === 'en' ? user.name : user.nameZh;
-            document.getElementById('profileDiagnosis').textContent = currentLang === 'en' ? user.diagnosis : user.diagnosisZh;
-            document.getElementById('profileGrade').textContent = currentLang === 'en' ? user.grade : user.gradeZh;
-            document.getElementById('profileSize').textContent = currentLang === 'en' ? user.size : user.sizeZh;
-            renderUserTimeline(user);
-            document.getElementById('userProfilePage').classList.add('active');
-        }
-
-        function renderUserTimeline(user) {
-            const container = document.getElementById('userTimeline');
-            container.innerHTML = '';
-            user.timeline.forEach(item => {
-                const isShrunk = item.result === 'Shrunk' || item.resultZh === '缩小';
-                const isGrow = item.result === 'Found' || item.result === 'Grow' || item.resultZh === '发现' || item.resultZh === '增大';
-                const resultClass = isShrunk ? 'shrink' : (isGrow ? 'grow' : 'stable');
-
-                container.innerHTML += `
-                    <div class="timeline-card">
-                        <div class="timeline-header">
-                            <span class="timeline-date">${item.date}</span>
-                        </div>
-                        <div class="timeline-intervention">
-                            <span class="intervention-tag">${currentLang === 'en' ? item.intervention : item.interventionZh}</span>
-                        </div>
-                        <div class="timeline-result">
-                            <span class="result-indicator ${resultClass}"></span>
-                            <span class="result-text">${item.size} → ${currentLang === 'en' ? item.result : item.resultZh}</span>
-                        </div>
-                        ${item.attachment ? `
-                        <div class="timeline-attachment">
-                            <div class="attachment-item"><span class="attachment-icon">📄</span> <span>${item.attachment} attached</span></div>
-                        </div>
-                        ` : ''}
-                    </div>
-                `;
-            });
-        }
-
-        function closeUserProfile() {
-            document.getElementById('userProfilePage').classList.remove('active');
-            currentUserId = null;
-        }
-
-        function openAddRecord() { document.getElementById('addRecordModal').classList.add('active'); }
-        function closeAddRecord() { document.getElementById('addRecordModal').classList.remove('active'); }
-        function toggleIntervention(btn) { btn.classList.toggle('selected'); }
-        function toggleShare() { document.getElementById('shareToggle').classList.toggle('active'); showToast(currentLang === 'en' ? 'Saved' : '已保存'); }
-        function saveRecord() { showToast(currentLang === 'en' ? 'Record saved!' : '记录已保存！'); closeAddRecord(); }
-
-        function openPaywall() { document.getElementById('paywallModal').classList.add('active'); }
-        function closePaywall() { document.getElementById('paywallModal').classList.remove('active'); }
-        function unlockPremium() { showToast(currentLang === 'en' ? 'Welcome VIP!' : '欢迎VIP！'); closePaywall(); }
-
-        function selectFilter(el) {
-            el.parentElement.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
-            el.classList.add('active');
-        }
-
-        function postComment() {
-            const input = document.getElementById('commentInput');
-            const text = input.value.trim();
-            if (!text) return;
-
-            const list = document.getElementById('discussionList');
-            const item = document.createElement('div');
-            item.className = 'discussion-item';
-            item.innerHTML = `
-                <div class="discussion-avatar">👩</div>
-                <div class="discussion-content">
-                    <div class="discussion-user">${currentLang === 'en' ? 'You' : '我'}</div>
-                    <div class="discussion-text">${text}</div>
-                    <div class="discussion-time">${currentLang === 'en' ? 'Just now' : '刚刚'}</div>
-                </div>
-            `;
-            list.insertBefore(item, list.firstChild);
-            input.value = '';
-            showToast(currentLang === 'en' ? 'Posted!' : '已发布！');
-        }
-
-        function showToast(msg) {
-            const t = document.getElementById('toast');
-            t.textContent = msg;
-            t.classList.add('show');
-            setTimeout(() => t.classList.remove('show'), 2500);
-        }
-
-        function openComments() {
-            document.getElementById('commentsSheet').classList.add('active');
-        }
-        function closeComments() {
-            document.getElementById('commentsSheet').classList.remove('active');
-        }
-        function closeCommentsOnOverlay(e) {
-            if (e.target === document.getElementById('commentsSheet')) closeComments();
-        }
-
-        // Filter chip clicks
-        document.querySelectorAll('.filter-chip').forEach(chip => {
-            chip.addEventListener('click', function() {
-                this.parentElement.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
-                this.classList.add('active');
-            });
-        });
-    </script>
+function toggleLang() {
+  lang = lang === 'en' ? 'zh' : 'en';
+  const s = strings[lang];
+  Object.keys(s).forEach(id => {
+    const el = document.getElementById(id);
+    if (!el || s[id] === null) return;
+    if (id === 't-followup') {
+      el.textContent = s[id].replace('\\n','\n');
+    } else {
+      el.textContent = s[id];
+    }
+  });
+  // placeholder
+  document.getElementById('t-notesPlaceholder').placeholder =
+    lang === 'en' ? "Doctor's notes, how you feel..." : '医生说的话、感受变化...';
+}
+</script>
 </body>
 </html>
